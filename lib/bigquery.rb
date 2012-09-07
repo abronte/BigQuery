@@ -7,11 +7,19 @@ class BigQuery
   def initialize(opts = {})
     @client = Google::APIClient.new
 
-    @client.authorization.client_id = opts['client_id']
-    @client.authorization.client_secret = opts['client_secret']
-    @client.authorization.refresh_token = opts['refresh_token']
+    key = Google::APIClient::PKCS12.load_key(
+      BASE_PATH + "/config/#{opts['key']}",
+      "notasecret"
+    )
 
-    @client.authorization.fetch_access_token!
+    asserter = Google::APIClient::JWTAsserter.new(
+      opts['service_email'], 
+      opts['auth_url'],
+      key
+    )
+
+    @client.authorization = asserter.authorize
+
     @bq = @client.discovered_api("bigquery", "v2")
 
     @project_id = opts['project_id']
