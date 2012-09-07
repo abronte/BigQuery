@@ -10,6 +10,14 @@ class BigQueryTest < MiniTest::Unit::TestCase
 
   def test_for_tables
     tables = @bq.tables
+    
     assert_equal tables[0]['kind'], "bigquery#table"
+  end
+
+  def test_for_query
+    result = @bq.query("SELECT u FROM [test.test_table] LIMIT 1")
+
+    assert_equal result['kind'], "bigquery#queryResponse"
+    assert_equal result['jobComplete'], true
   end
 end
