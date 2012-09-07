@@ -12,6 +12,8 @@ Only service accounts are supported right now. https://developers.google.com/acc
 * tables
 * load
 * tables_formatted
+* job
+* jobs
 
 ### Example
 
@@ -31,3 +33,5 @@ Only service accounts are supported right now. https://developers.google.com/acc
 ### Troubleshooting
 
 If you're getting an "invalid_grant" error it usually means your system clock is off.
+
+If you're getting unauthorized requested but you've been able to successfully connect before, you need to refresh your auth by running the "refresh_auth" method.
