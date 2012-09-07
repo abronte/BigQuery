@@ -8,7 +8,7 @@ class BigQuery
     @client = Google::APIClient.new
 
     key = Google::APIClient::PKCS12.load_key(
-      BASE_PATH + "/config/#{opts['key']}",
+      opts['key'],
       "notasecret"
     )
 
