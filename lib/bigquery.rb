@@ -12,13 +12,13 @@ class BigQuery
       "notasecret"
     )
 
-    asserter = Google::APIClient::JWTAsserter.new(
+    @asserter = Google::APIClient::JWTAsserter.new(
       opts['service_email'], 
       "https://www.googleapis.com/auth/bigquery",
       key
     )
 
-    @client.authorization = asserter.authorize
+    refresh_auth
 
     @bq = @client.discovered_api("bigquery", "v2")
 
@@ -53,6 +53,10 @@ class BigQuery
 
   def tables_formatted(dataset = @dataset)
     tables(dataset).map {|t| "[#{dataset}.#{t['tableReference']['tableId']}]"}
+  end
+
+  def refresh_auth
+    @client.authorization = @asserter.authorize
   end
 
   private
