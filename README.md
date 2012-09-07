@@ -4,8 +4,7 @@ BigQuery is a wrapper around the Google api ruby gem designed to make interactin
 
 ### Authorization
 
-Only service accounts are supported right now.  
-https://developers.google.com/accounts/docs/OAuth2#serviceaccount
+Only service accounts are supported right now. https://developers.google.com/accounts/docs/OAuth2#serviceaccount
 
 ### Available methods
 
