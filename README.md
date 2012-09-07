@@ -2,11 +2,11 @@
 
 BigQuery is a wrapper around the Google api ruby gem designed to make interacting with BigQuery easier. This gem is very new and doesn't have many features quite yet.
 
-### Authorization
+## Authorization
 
 Only service accounts are supported right now. https://developers.google.com/accounts/docs/OAuth2#serviceaccount
 
-### Available methods
+## Available methods
 
 * query
 * tables
@@ -16,7 +16,7 @@ Only service accounts are supported right now. https://developers.google.com/acc
 * jobs
 * refresh_auth
 
-### Example
+## Example
 
     require 'bigquery'
 
@@ -31,13 +31,13 @@ Only service accounts are supported right now. https://developers.google.com/acc
 
     puts bq.tables
 
-### Troubleshooting
+## Troubleshooting
 
 If you're getting an "invalid_grant" error it usually means your system clock is off.
 
 If you're getting unauthorized requested but you've been able to successfully connect before, you need to refresh your auth by running the "refresh_auth" method.
 
-### License
+## License
 
 LICENSE:
 (The MIT License)
