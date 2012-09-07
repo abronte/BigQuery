@@ -14,6 +14,7 @@ Only service accounts are supported right now. https://developers.google.com/acc
 * tables_formatted
 * job
 * jobs
+* refresh_auth
 
 ### Example
 
