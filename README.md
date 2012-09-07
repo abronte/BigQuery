@@ -27,3 +27,7 @@ Only service accounts are supported right now.
     bq = BigQuery.new(opts)
 
     puts bq.tables
+
+### Troubleshooting
+
+If you're getting an "invalid_grant" error it usually means your system clock is off.
