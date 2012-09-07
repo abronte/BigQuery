@@ -1,17 +1,9 @@
-desc "Build and publish gem"
-task :release do
-  puts "Building and releasing BigQuery"
-  sh "rm -f *.gem"
-  sh "gem build bigquery.gemspec && gem push #{release}"
-end
+require 'bundler/setup'
+require 'bundler/gem_tasks'
+require 'rake/testtask'
 
-desc "Build the gem"
-task :build do
-  puts "Building BigQuery"
-  sh "rm -f *.gem"
-  sh "gem build bigquery.gemspec"
-end
-
-def release
-  "bigquery-#{File.read("bigquery.gemspec")[/s.version *= *"(.*?)"/, 1]}"
+Rake::TestTask.new(:test) do |test|
+  test.libs << 'lib' << 'test'
+  test.pattern = 'test/*.rb'
+  test.verbose = true
 end
