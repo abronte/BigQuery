@@ -44,6 +44,9 @@ class BigQuery
     })
   end
 
+  def job(opts)
+  end
+
   def tables(dataset = @dataset)
     api({
       :api_method => @bq.tables.list,
