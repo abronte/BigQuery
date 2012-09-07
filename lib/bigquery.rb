@@ -14,7 +14,7 @@ class BigQuery
 
     asserter = Google::APIClient::JWTAsserter.new(
       opts['service_email'], 
-      opts['auth_url'],
+      "https://www.googleapis.com/auth/bigquery",
       key
     )
 
