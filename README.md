@@ -2,6 +2,10 @@
 
 BigQuery is a wrapper around the Google api ruby gem designed to make interacting with BigQuery easier. This gem is very new and doesn't have many features quite yet.
 
+## Install
+    
+    gem install bigquery
+
 ## Authorization
 
 Only service accounts are supported right now. https://developers.google.com/accounts/docs/OAuth2#serviceaccount
