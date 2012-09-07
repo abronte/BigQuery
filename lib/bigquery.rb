@@ -44,7 +44,20 @@ class BigQuery
     })
   end
 
-  def job(opts)
+  def job(id, opts = {})
+    opts['jobId'] = id
+
+    api({ 
+      :api_method => @bq.jobs.get,
+      :parameters => opts
+    })
+  end
+
+  def jobs(opts = {})
+    api({ 
+      :api_method => @bq.jobs.list,
+      :parameters => opts
+    })
   end
 
   def tables(dataset = @dataset)
