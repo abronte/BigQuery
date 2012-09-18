@@ -41,6 +41,10 @@ If you're getting an "invalid_grant" error it usually means your system clock is
 
 If you're getting unauthorized requested but you've been able to successfully connect before, you need to refresh your auth by running the "refresh_auth" method.
 
+## Contributing
+
+Fork and submit a pull request and make sure you add a test for any feature you add.
+
 ## License
 
 LICENSE:
