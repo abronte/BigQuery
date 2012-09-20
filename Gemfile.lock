@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    bigquery (0.2.5)
-      google-api-client
+    bigquery (0.2.6)
+      google-api-client (>= 0.4.6)
 
 GEM
   remote: http://rubygems.org/
@@ -15,7 +15,7 @@ GEM
     extlib (0.9.15)
     faraday (0.8.4)
       multipart-post (~> 1.1)
-    google-api-client (0.4.5)
+    google-api-client (0.4.6)
       addressable (>= 2.3.2)
       autoparse (>= 0.3.2)
       extlib (>= 0.9.15)
