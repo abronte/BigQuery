@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name            = "bigquery"
-  s.version         = "0.2.5"
+  s.version         = "0.2.6"
   s.authors         = ["Adam Bronte"]
   s.email           = "adam@brontesaurus.com"
   s.description     = "This library is a wrapper around the google-api-client ruby gem.\nIt's meant to make calls to BigQuery easier and streamlined."
@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.homepage        = "https://github.com/abronte/BigQuery"
   s.files           = ['lib/bigquery.rb']
 
-  s.add_dependency  "google-api-client"
+  s.add_dependency  "google-api-client", ">= 0.4.6"
 
   s.add_development_dependency "bundler"
   s.add_development_dependency "rake"
