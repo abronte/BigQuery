@@ -60,6 +60,28 @@ class BigQuery
     })
   end
 
+  def get_query_results(jobId, opts = {})
+    opts['jobId'] = jobId
+    api({ 
+      :api_method => @bq.jobs.get_query_results,
+      :parameters => opts
+    })
+  end
+
+  # perform a query synchronously
+  # fetch all result rows, even when that takes >1 query
+  # invoke /block/ once for each row, passing the row
+  def each(q, &block)
+    current_row = 0
+    # repeatedly fetch results, starting from current_row
+    # invoke the block on each one, then grab next page if there is one
+    # it'll terminate when res has no 'rows' key or when we've done enough rows
+    while( ( res = query(q, :startIndex => current_row) ) && res['rows'] && current_row < res['totalRows'] ) do
+      res['rows'].each(&block)
+      current_row += res['rows'].size
+    end
+  end
+
   def tables(dataset = @dataset)
     api({
       :api_method => @bq.tables.list,
