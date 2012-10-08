@@ -27,10 +27,16 @@ class BigQuery
   end
 
   def query(q)
-    api({
+    res = api({
       :api_method => @bq.jobs.query,
       :body_object => { "query" => q, 'timeoutMs' => 90 * 1000}
     })
+
+    if res.has_key? "errors"
+      raise BigQueryError, "BigQuery has returned and error #{res['errors']}" 
+    else
+      res
+    end
   end
 
   def load(opts)
@@ -119,3 +125,6 @@ class BigQuery
     JSON.parse(resp.body)
   end
 end
+
+class BigQueryError < StandardError  
+end  

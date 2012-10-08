@@ -20,4 +20,13 @@ class BigQueryTest < MiniTest::Unit::TestCase
     assert_equal result['kind'], "bigquery#queryResponse"
     assert_equal result['jobComplete'], true
   end
+
+  # def test_timeout_error
+  #   sleep(60 * 60)
+
+  #   result = @bq.query("SELECT u FROM [test.test_table] LIMIT 1 asdlfjhasdlkfjhasdlkfklajh")
+  #   puts result.inspect
+  #   assert_equal result['error'], "bigquery#queryResponse"
+  #   assert_equal result['jobComplete'], true
+  # end
 end
