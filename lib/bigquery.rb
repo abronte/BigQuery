@@ -33,7 +33,7 @@ class BigQuery
     })
 
     if res.has_key? "errors"
-      raise BigQueryError, "BigQuery has returned and error #{res['errors']}" 
+      raise BigQueryError, "BigQuery has returned an error :: #{res['errors'].inspect}" 
     else
       res
     end
