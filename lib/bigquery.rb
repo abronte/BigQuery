@@ -108,6 +108,14 @@ class BigQuery
     tables(dataset).map {|t| "[#{dataset}.#{t['tableReference']['tableId']}]"}
   end
 
+  # Returns all rows of table data.
+  def table_data(tableId, dataset = @dataset)
+    api({
+            :api_method => @bq.tabledata.list,
+            :parameters => {"datasetId" => dataset, "tableId" => tableId}
+        })['rows']
+  end
+
   def refresh_auth
     @client.authorization = @asserter.authorize
   end
