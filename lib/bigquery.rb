@@ -7,8 +7,8 @@ class BigQuery
   def initialize(opts = {})
     @client = Google::APIClient.new
 
-    key = Google::APIClient::PKCS12.load_key(
-      opts['key'],
+    key = Google::APIClient::PKCS12.load_key(File.open(
+      opts['key'], mode: 'rb'),
       "notasecret"
     )
 
