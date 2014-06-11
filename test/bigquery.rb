@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'minitest/autorun'
 require 'yaml'
 require 'bigquery'
