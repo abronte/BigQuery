@@ -1,9 +1,11 @@
 # BigQuery
 
-BigQuery is a wrapper around the Google api ruby gem designed to make interacting with BigQuery easier. This gem is very new and doesn't have many features quite yet.
+BigQuery is a wrapper around the Google api ruby gem designed to make interacting with BigQuery easier.
+
+This gem is very new and doesn't have many features quite yet.
 
 ## Install
-    
+
     gem install bigquery
 
 ## Authorization
@@ -31,9 +33,32 @@ Only service accounts are supported right now. https://developers.google.com/acc
     opts['project_id']    = '54321'
     opts['dataset']       = 'yourdataset'
 
-    bq = BigQuery.new(opts)
+    bq = BigQuery::Client.new(opts)
 
     puts bq.tables
+
+## Keys
+
+To get the keys you need to have a:
+
+* google API project (link)[https://console.developers.google.com/project]
+* bigquery activated (link)[https://bigquery.cloud.google.com]
+* create a bigquery dataset in the project (link)[https://bigquery.cloud.google.com]
+
+1- Goto your project google api access
+
+https://code.google.com/apis/console/b/0/?noredirect&pli=1#project:YOUR_PROJECT_ID:access
+
+2- Create a new client-ID for service_account
+3- Download de key file
+
+Now you have everything:
+
+* client_id: API access client-ID
+* service_email: API access Email address
+* key: API access key file path
+* project_id: your google API project id
+* dataset: your big query dataset name
 
 ## Troubleshooting
 
