@@ -1,22 +1,27 @@
 # encoding: UTF-8
 require 'minitest/autorun'
 require 'yaml'
-require 'bigquery'
+require 'big_query'
+require 'pry-byebug'
 
 class BigQueryTest < MiniTest::Unit::TestCase
   def setup
-    config = File.expand_path(File.dirname(__FILE__) + "/../.bigquery_settings.yml")
-    @bq = BigQuery.new(YAML.load_file(config))
+    @bq = BigQuery::Client.new(config)
+  end
+
+  def config
+    return @config if @config
+    config_data ||= File.expand_path(File.dirname(__FILE__) + "/../.bigquery_settings.yml")
+    @config = YAML.load_file(config_data)
   end
 
   def test_for_tables
     tables = @bq.tables
-    
     assert_equal tables[0]['kind'], "bigquery#table"
   end
 
   def test_for_query
-    result = @bq.query("SELECT u FROM [test.test_table] LIMIT 1")
+    result = @bq.query("SELECT * FROM [#{config['dataset']}.test_table] LIMIT 1")
 
     assert_equal result['kind'], "bigquery#queryResponse"
     assert_equal result['jobComplete'], true
