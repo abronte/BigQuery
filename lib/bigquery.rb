@@ -1,4 +1,5 @@
 require 'google/api_client'
+require 'json'
 
 class BigQuery
 
