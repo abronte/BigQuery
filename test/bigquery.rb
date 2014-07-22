@@ -21,14 +21,14 @@ class BigQueryTest < MiniTest::Unit::TestCase
   end
 
   def test_for_query
-    result = @bq.query("SELECT * FROM [#{config['dataset']}.test_table] LIMIT 1")
+    result = @bq.query("SELECT * FROM [#{config['dataset']}.test] LIMIT 1")
 
     assert_equal result['kind'], "bigquery#queryResponse"
     assert_equal result['jobComplete'], true
   end
 
   def test_for_load
-    result = @bq.insert_all("id" => 123, "type" => "Task")
+    result = @bq.insert_all('test' ,"id" => 123, "type" => "Task")
 
     assert_equal result['kind'], "bigquery#queryResponse"
     assert_equal result['jobComplete'], true
