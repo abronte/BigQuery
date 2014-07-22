@@ -48,6 +48,20 @@ module BigQuery
       )
     end
 
+    # Steam insert into table
+    # 
+    # @param table_id [String] table id to insert into
+    # @param opts [Hash] field value hash to be inserted
+    # @return [Hash] 
+    def insert_all(table_id, opts)
+      api(
+        api_method: @bq.tabledata.insert_all,
+        parameters: { 'tableId' => table_id,
+                      'datasetId' => @dataset }, 
+        body_object: { 'rows' => [{ 'json' => opts }] } 
+      )
+    end
+
     def refresh_auth
       @client.authorization = @asserter.authorize
     end
