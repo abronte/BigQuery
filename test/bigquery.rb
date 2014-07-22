@@ -30,8 +30,7 @@ class BigQueryTest < MiniTest::Unit::TestCase
   def test_for_load
     result = @bq.insert_all('test' ,"id" => 123, "type" => "Task")
 
-    assert_equal result['kind'], "bigquery#queryResponse"
-    assert_equal result['jobComplete'], true
+    assert_equal result['kind'], "bigquery#tableDataInsertAllResponse"
   end
   # def test_timeout_error
   #   sleep(60 * 60)
