@@ -1,6 +1,12 @@
+
+# Module to handle table actions
+# https://developers.google.com/bigquery/docs/tables
 module BigQuery
   class Client
     module Tables
+      ALLOWED_FIELD_TYPES = ['STRING', 'INTEGER', 'FLOAT', 'BOOLEAN', 'RECORD']
+      ALLOWED_FIELD_MODES = ['NULLABLE', 'REQUIRED', 'REPEATED']
+
       # Lists the tables
       #
       # @param dataset [String] dataset to look for
@@ -19,7 +25,7 @@ module BigQuery
       # @param dataset [String] dataset to look for
       # @return [Hash] json api response
       def tables_formatted(dataset = @dataset)
-        tables(dataset).map {|t| "[#{dataset}.#{t['tableReference']['tableId']}]"}
+        tables(dataset).map { |t| t['tableReference']['tableId'] }
       end
 
       # Returns all rows of table data
@@ -32,6 +38,73 @@ module BigQuery
                        parameters: { 'datasetId' => dataset,
                                      'tableId' => tableId })
         response['rows'] || []
+      end
+
+      # insert row into table
+      #
+      # @param tableId [String] table id to insert into
+      # @param opts [Hash] field value hash to be inserted
+      # @return [Hash]
+      def insert(tableId, opts)
+        api(
+          api_method: @bq.tabledata.insert_all,
+          parameters: { 'tableId' => tableId,
+                        'datasetId' => @dataset },
+          body_object: { 'rows' => [{ 'json' => opts }] }
+        )
+      end
+
+      # Creating a new table
+      #
+      # @param tableId [String] table id to insert into
+      # @param schema [Hash] name => opts hash for the schema
+      #
+      # examples:
+      #
+      # @bq.create_table('new_table', id: { type: 'INTEGER', mode: 'required' })
+      # @bq.create_table('new_table', price: { type: 'FLOAT' })
+      def create_table(tableId, schema={})
+        api(
+          api_method: @bq.tables.insert,
+          parameters: { "datasetId" => @dataset },
+          body_object: { "tableReference" => {
+                            "tableId" => tableId,
+                            "projectId" => @project_id,
+                            "datasetId" => @dataset
+                          },
+                          "schema" => {
+                            "fields" => validate_schema(schema)
+                          }
+                        }
+        )
+      end
+
+      # Deletes the given tableId
+      #
+      # @param tableId [String] table id to insert into
+      def delete_table(tableId)
+        api(api_method: @bq.tables.delete,
+            parameters: { 'tableId' => tableId,
+                          'datasetId' => @dataset }
+        )
+      end
+
+      protected
+
+      # Translate given schema to a one understandable by bigquery
+      #
+      # @param [Hash] schema like { field_nane => { type: 'TYPE', mode: 'MODE' }, ... }
+      # @return [Array<Hash>]
+      def validate_schema(schema)
+        fields = []
+        schema.map do |name, options|
+          type = (ALLOWED_FIELD_TYPES & [options[:type].to_s]).first
+          mode = (ALLOWED_FIELD_MODES & [options[:mode].to_s]).first
+          field = { "name" => name.to_s, "type" => type }
+          field["mode"] = mode if mode
+          fields << field
+        end
+        fields
       end
     end
   end

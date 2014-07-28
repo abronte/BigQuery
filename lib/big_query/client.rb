@@ -37,37 +37,17 @@ module BigQuery
       @dataset = opts['dataset']
     end
 
-    def load(opts)
-      api(
-        api_method: @bq.jobs.insert,
-        body_object: {
-          'configuration' => {
-            'load' => opts
-          }
-        }
-      )
-    end
-
-    # Steam insert into table
-    # 
-    # @param table_id [String] table id to insert into
-    # @param opts [Hash] field value hash to be inserted
-    # @return [Hash] 
-    def insert_all(table_id, opts)
-      api(
-        api_method: @bq.tabledata.insert_all,
-        parameters: { 'tableId' => table_id,
-                      'datasetId' => @dataset }, 
-        body_object: { 'rows' => [{ 'json' => opts }] } 
-      )
-    end
-
     def refresh_auth
       @client.authorization = @asserter.authorize
     end
 
     private
 
+    # Performs the api calls with the given params adding the defined project and
+    # dataset params if not defined
+    #
+    # @param opts [Hash] options for the api call
+    # @return [Hash] json response
     def api(opts)
       if opts[:parameters]
         opts[:parameters] = opts[:parameters].merge({"projectId" => @project_id})
@@ -76,9 +56,18 @@ module BigQuery
       end
 
       resp = @client.execute(opts)
-      data = JSON.parse(resp.body)
-      handle_error(data) if is_error?(data)
+      data = parse_body(resp)
+      handle_error(data) if data && is_error?(data)
       data
+    end
+
+    # Parses json body if present and is a json formatted
+    #
+    # @param resp [Faraday::Response] response object
+    # @return [Hash]
+    def parse_body(resp)
+      return nil unless resp.body && !resp.body.empty?
+      JSON.parse(resp.body)
     end
   end
 end
