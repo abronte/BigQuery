@@ -27,10 +27,11 @@ class BigQuery
     @dataset = opts['dataset']
   end
 
-  def query(q)
+  def query(q, options = {})
+    timeout = options.fetch(:timeout, 90 * 1000)
     res = api({
       :api_method => @bq.jobs.query,
-      :body_object => { "query" => q, 'timeoutMs' => 90 * 1000}
+      :body_object => { "query" => q, 'timeoutMs' => timeout}
     })
 
     if res.has_key? "errors"
