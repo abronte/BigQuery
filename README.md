@@ -2,8 +2,6 @@
 
 BigQuery is a wrapper around the Google api ruby gem designed to make interacting with BigQuery easier.
 
-This gem is very new and doesn't have many features quite yet.
-
 ## Install
 
     gem install bigquery
@@ -36,6 +34,52 @@ Only service accounts are supported right now. https://developers.google.com/acc
     bq = BigQuery::Client.new(opts)
 
     puts bq.tables
+
+## Tables
+
+List tables in dataset
+
+    bq.tables
+
+List table names
+
+    bq.tables_formatted
+
+Fetch table data
+
+    bq.table_data('table_name')
+
+Delete exiting table
+
+    bq.delete_table('test123')
+
+Create table. First param is the table name second one is the table schema defined with the following format
+
+    {
+        field_name: {
+            type: 'TYPE_VALUE BETWEEN (STRING, INTEGER, FLOAT, BOOLEAN, RECORD)',
+            mode: 'MODE_VALUE BETWEEN (NULLABLE, REQUIRED, REPEATED)'
+        },
+        other_field_name: { ... }
+    }
+
+
+As this example defines
+
+    table_name = 'test123'
+    table_schema = { id: { type: 'INTEGER' },
+                     name: { type: 'STRING' } }
+    bq.create_table(table_name, table_schema)
+
+## Query
+
+You can either select
+
+    bq.query("SELECT * FROM [#{config['dataset']}.table_name] LIMIT 1")
+
+Or insert
+
+    bq.insert('table_name', 'id' => 123, 'type' => 'Task')
 
 ## Keys
 
@@ -73,6 +117,7 @@ Fork and submit a pull request and make sure you add a test for any feature you 
 ## License
 
 LICENSE:
+
 (The MIT License)
 
 Copyright © 2012 Adam Bronte
@@ -82,5 +127,3 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED ‘AS IS’, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-![track](//in.getclicky.com/66392398ns.gif)

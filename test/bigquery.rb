@@ -57,7 +57,6 @@ class BigQueryTest < MiniTest::Unit::TestCase
     refute_includes tables, 'test123'
   end
 
-
   def test_for_query
     result = @bq.query("SELECT * FROM [#{config['dataset']}.test] LIMIT 1")
 
