@@ -1,32 +1,72 @@
+# encoding: UTF-8
 require 'minitest/autorun'
 require 'yaml'
-require 'bigquery'
+require 'big_query'
+require 'pry-byebug'
 
 class BigQueryTest < MiniTest::Unit::TestCase
   def setup
-    config = File.expand_path(File.dirname(__FILE__) + "/../.bigquery_settings.yml")
-    @bq = BigQuery.new(YAML.load_file(config))
+    @bq = BigQuery::Client.new(config)
+  end
+
+  def config
+    return @config if @config
+    config_data ||= File.expand_path(File.dirname(__FILE__) + "/../.bigquery_settings.yml")
+    @config = YAML.load_file(config_data)
   end
 
   def test_for_tables
     tables = @bq.tables
-    
+
     assert_equal tables[0]['kind'], "bigquery#table"
+    assert_equal tables[0]['id'], "#{config['project_id']}:#{config['dataset']}.test"
+    assert_equal tables[0]['tableReference']['tableId'], 'test'
+  end
+
+  def test_for_tables_formatted
+    result = @bq.tables_formatted
+
+    assert_includes result, 'test'
+  end
+
+  def test_for_table_data
+    result = @bq.table_data('test')
+
+    assert_kind_of Array, result
+  end
+
+  def test_for_create_table
+    if @bq.tables_formatted.include? 'test123'
+      @bq.delete_table('test123')
+    end
+    result = @bq.create_table('test123', id: { type: 'INTEGER' })
+
+    assert_equal result['kind'], "bigquery#table"
+    assert_equal result['tableReference']['tableId'], "test123"
+    assert_equal result['schema']['fields'], [{"name"=>"id", "type"=>"INTEGER"}]
+  end
+
+  def test_for_delete_table
+    if !@bq.tables_formatted.include? 'test123'
+      @bq.create_table('test123', id: { type: 'INTEGER' })
+    end
+    result = @bq.delete_table('test123')
+
+    tables = @bq.tables_formatted
+
+    refute_includes tables, 'test123'
   end
 
   def test_for_query
-    result = @bq.query("SELECT u FROM [test.test_table] LIMIT 1")
+    result = @bq.query("SELECT * FROM [#{config['dataset']}.test] LIMIT 1")
 
     assert_equal result['kind'], "bigquery#queryResponse"
     assert_equal result['jobComplete'], true
   end
 
-  # def test_timeout_error
-  #   sleep(60 * 60)
+  def test_for_insert
+    result = @bq.insert('test' ,"id" => 123, "type" => "Task")
 
-  #   result = @bq.query("SELECT u FROM [test.test_table] LIMIT 1 asdlfjhasdlkfjhasdlkfklajh")
-  #   puts result.inspect
-  #   assert_equal result['error'], "bigquery#queryResponse"
-  #   assert_equal result['jobComplete'], true
-  # end
+    assert_equal result['kind'], "bigquery#tableDataInsertAllResponse"
+  end
 end
