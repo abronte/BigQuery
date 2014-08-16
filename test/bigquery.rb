@@ -19,7 +19,7 @@ class BigQueryTest < MiniTest::Unit::TestCase
     tables = @bq.tables
 
     assert_equal tables[0]['kind'], "bigquery#table"
-    assert_equal tables[0]['id'], "redbooth-bravo-test:console_test.test"
+    assert_equal tables[0]['id'], "#{config['project_id']}:#{config['dataset']}.test"
     assert_equal tables[0]['tableReference']['tableId'], 'test'
   end
 
