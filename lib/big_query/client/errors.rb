@@ -17,9 +17,9 @@ module BigQuery
         error = response['error']
         case error['code']
         when 404
-          fail NotFound, error['message']
+          fail BigQuery::Errors::NotFound, error['message']
         else
-          fail BigQueryError, error['message']
+          fail BigQuery::Errors::BigQueryError, error['message']
         end
       end
     end
