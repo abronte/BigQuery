@@ -22,7 +22,7 @@ Only service accounts are supported right now. https://developers.google.com/acc
 
 ## Example
 
-    require 'bigquery'
+    require 'big_query'
 
     opts = {}
     opts['client_id']     = '1234.apps.googleusercontent.com'
