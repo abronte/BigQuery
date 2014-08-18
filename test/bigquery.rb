@@ -7,6 +7,10 @@ require 'pry-byebug'
 class BigQueryTest < MiniTest::Unit::TestCase
   def setup
     @bq = BigQuery::Client.new(config)
+    if @bq.tables_formatted.include? 'test'
+      @bq.delete_table('test')
+    end
+    result = @bq.create_table('test', id: { type: 'INTEGER', mode: 'REQUIRED' }, type: { type: 'STRING', mode: 'NULLABLE' })
   end
 
   def config
@@ -55,6 +59,21 @@ class BigQueryTest < MiniTest::Unit::TestCase
     tables = @bq.tables_formatted
 
     refute_includes tables, 'test123'
+  end
+
+  def test_for_describe_table
+    result = @bq.describe_table('test')
+
+    assert_equal result['kind'], "bigquery#table"
+    assert_equal result['type'], "TABLE"
+    assert_equal result['id'], "#{config['project_id']}:#{config['dataset']}.test"
+    assert_equal result['tableReference']['tableId'], 'test'
+    assert_equal result['schema']['fields'][0]['name'], 'id'
+    assert_equal result['schema']['fields'][0]['type'], 'INTEGER'
+    assert_equal result['schema']['fields'][0]['mode'], 'REQUIRED'
+    assert_equal result['schema']['fields'][1]['name'], 'type'
+    assert_equal result['schema']['fields'][1]['type'], 'STRING'
+    assert_equal result['schema']['fields'][1]['mode'], 'NULLABLE'
   end
 
   def test_for_query
