@@ -71,6 +71,10 @@ As this example defines
                      name: { type: 'STRING' } }
     bq.create_table(table_name, table_schema)
 
+Describe table schema
+
+    bq.describe_table('table_name')
+
 ## Query
 
 You can either select
@@ -109,6 +113,24 @@ Now you have everything:
 If you're getting an "invalid_grant" error it usually means your system clock is off.
 
 If you're getting unauthorized requested but you've been able to successfully connect before, you need to refresh your auth by running the "refresh_auth" method.
+
+## How to run test
+
+Before run test, you must create file named `.bigquery_settings.yml` on root of this repository. `.bigquery_settings.yml` must include following infomation.
+
+```yaml
+client_id:     '1234.apps.googleusercontent.com'
+service_email: '1234@developer.gserviceaccount.com'
+key:           '/path/to/somekeyfile-privatekey.p12'
+project_id:    '54321'
+dataset:       'yourdataset'
+```
+
+Then run tests via rake.
+
+```
+$ bundle install && bundle exec rake test
+```
 
 ## Contributing
 

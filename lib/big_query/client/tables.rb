@@ -89,6 +89,19 @@ module BigQuery
         )
       end
 
+      # Describe the schema of the given tableId
+      #
+      # @param tableId [String] table id to describe
+      # @param dataset [String] dataset to look for
+      # @return [Hash] json api response
+      def describe_table(tableId, dataset = @dataset)
+        api(
+          api_method: @bq.tables.get,
+          parameters: { 'tableId' => tableId,
+                        'datasetId' => @dataset }
+        )
+      end
+
       protected
 
       # Translate given schema to a one understandable by bigquery
