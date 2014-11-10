@@ -4,7 +4,7 @@
 module BigQuery
   class Client
     module Tables
-      ALLOWED_FIELD_TYPES = ['STRING', 'INTEGER', 'FLOAT', 'BOOLEAN', 'RECORD']
+      ALLOWED_FIELD_TYPES = ['STRING', 'INTEGER', 'FLOAT', 'BOOLEAN', 'RECORD', 'TIMESTAMP']
       ALLOWED_FIELD_MODES = ['NULLABLE', 'REQUIRED', 'REPEATED']
 
       # Lists the tables
