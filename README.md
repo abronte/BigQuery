@@ -57,7 +57,7 @@ Create table. First param is the table name second one is the table schema defin
 
     {
         field_name: {
-            type: 'TYPE_VALUE BETWEEN (STRING, INTEGER, FLOAT, BOOLEAN, RECORD)',
+            type: 'TYPE_VALUE BETWEEN (STRING, INTEGER, FLOAT, BOOLEAN, RECORD, TIMESTAMP)',
             mode: 'MODE_VALUE BETWEEN (NULLABLE, REQUIRED, REPEATED)'
         },
         other_field_name: { ... }
