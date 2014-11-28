@@ -46,25 +46,17 @@ module BigQuery
       # @param opts [Hash] field value hash to be inserted
       # @return [Hash]
       def insert(tableId, opts)
-        api(
-          api_method: @bq.tabledata.insert_all,
-          parameters: { 'tableId' => tableId,
-                        'datasetId' => @dataset },
-          body_object: { 'rows' => [{ 'json' => opts }] }
-        )
-      end
+        if opts.class == Array
+          body = { 'rows' => opts = opts.map{|x| {"json" => x}} }
+        else
+          body = { 'rows' => [{ 'json' => opts }] }
+        end
 
-      # insert an array of rows into a table
-      #
-      # @param tableId [String] table id to insert into
-      # @param opts [Array] array of field value hashes to be inserted
-      # @return [Hash]
-      def insert_batch(tableId, opts)
         api(
           api_method: @bq.tabledata.insert_all,
           parameters: { 'tableId' => tableId,
                         'datasetId' => @dataset },
-          body_object: { 'rows' =>  opts.map{|x| {"json" => x}} }
+          body_object: body
         )
       end
 

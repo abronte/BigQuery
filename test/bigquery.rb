@@ -89,7 +89,7 @@ class BigQueryTest < MiniTest::Unit::TestCase
     assert_equal result['kind'], "bigquery#tableDataInsertAllResponse"
   end
 
-  def test_for_insert_batch
+  def test_for_insert_array
     data = [
       {"id" => 123, "type" => "Task"},
       {"id" => 321, "type" => "Other task"}
