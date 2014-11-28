@@ -15,7 +15,10 @@ Gem::Specification.new do |s|
   s.files           = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
 
-  s.add_dependency  "google-api-client", ">= 0.4.6"
+  # current sort of workaround. see issue#13
+  s.add_dependency "retriable", "~> 1.4"
+
+  s.add_dependency "google-api-client", "~> 0.7.1"
 
   s.add_development_dependency "bundler"
   s.add_development_dependency "rake"

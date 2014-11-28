@@ -1,8 +1,9 @@
 PATH
   remote: .
   specs:
-    bigquery (0.2.9)
-      google-api-client (>= 0.4.6)
+    bigquery (0.2.11)
+      google-api-client (~> 0.7.1)
+      retriable (~> 1.4)
 
 GEM
   remote: https://rubygems.org/
@@ -32,8 +33,9 @@ GEM
       retriable (>= 1.4)
       signet (>= 0.5.0)
       uuidtools (>= 2.1.0)
-    jwt (1.0.0)
-    launchy (2.4.2)
+    jwt (0.1.5)
+      multi_json (>= 1.0)
+    launchy (2.4.3)
       addressable (~> 2.3)
     method_source (0.8.2)
     minitest (5.3.4)
@@ -54,7 +56,7 @@ GEM
       jwt (>= 0.1.5)
       multi_json (>= 1.0.0)
     slop (3.5.0)
-    uuidtools (2.1.4)
+    uuidtools (2.1.5)
 
 PLATFORMS
   ruby
