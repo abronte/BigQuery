@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bigquery (0.2.11)
+    bigquery (0.3.0)
       google-api-client (~> 0.7.1)
       retriable (~> 1.4)
 
