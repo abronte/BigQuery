@@ -75,15 +75,20 @@ Describe table schema
 
     bq.describe_table('table_name')
 
-## Query
-
-You can either select
+## Querying
 
     bq.query("SELECT * FROM [#{config['dataset']}.table_name] LIMIT 1")
 
-Or insert
+## Inserting
+
+Insert a single row
 
     bq.insert('table_name', 'id' => 123, 'type' => 'Task')
+    
+Batch insert an array of rows. [See bigquery docs for limitations.](https://cloud.google.com/bigquery/streaming-data-into-bigquery#quota)
+
+    data = [{'id' => 123, 'type' => 'Foo'}, {'id' => 321, 'type' => 'Bar'}]
+    bq.insert('table_name', data)
 
 ## Keys
 
