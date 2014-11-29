@@ -1,3 +1,5 @@
+# https://cloud.google.com/bigquery/docs/reference/v2/jobs
+
 module BigQuery
   class Client
     module Jobs
@@ -32,6 +34,15 @@ module BigQuery
 
         api(api_method: @bq.jobs.get_query_results,
             parameters: opts)
+      end
+
+      # Insert a job
+      #
+      # @param options [Hash] hash of job options 
+      # @return [Hash] json api response
+      def insert_job(opts)
+        api(api_method: @bq.jobs.insert,
+            body_object: {configuration: opts})
       end
     end
   end

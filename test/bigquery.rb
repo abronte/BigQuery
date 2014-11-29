@@ -99,4 +99,10 @@ class BigQueryTest < MiniTest::Unit::TestCase
 
     assert_equal result['kind'], "bigquery#tableDataInsertAllResponse"
   end
+
+  def test_for_insert_job
+    res = @bq.insert_job(query: {query: "SELECT * FROM [#{config['dataset']}.test] LIMIT 1"})
+
+    assert_equal result['kind'], "bigquery#job"
+  end
 end
