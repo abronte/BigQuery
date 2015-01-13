@@ -108,7 +108,7 @@ module BigQuery
         )
       end
 
-      # protected
+      protected
 
       # Translate given schema to a one understandable by bigquery
       #
