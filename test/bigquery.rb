@@ -20,11 +20,10 @@ class BigQueryTest < MiniTest::Unit::TestCase
   end
 
   def test_for_tables
-    tables = @bq.tables
+    table = @bq.tables.select{|t| t['id'] == "#{config['project_id']}:#{config['dataset']}.test"}.first
 
-    assert_equal tables[0]['kind'], "bigquery#table"
-    assert_equal tables[0]['id'], "#{config['project_id']}:#{config['dataset']}.test"
-    assert_equal tables[0]['tableReference']['tableId'], 'test'
+    assert_equal table['kind'], "bigquery#table"
+    assert_equal table['tableReference']['tableId'], 'test'
   end
 
   def test_for_tables_formatted
@@ -43,11 +42,39 @@ class BigQueryTest < MiniTest::Unit::TestCase
     if @bq.tables_formatted.include? 'test123'
       @bq.delete_table('test123')
     end
-    result = @bq.create_table('test123', id: { type: 'INTEGER' })
+
+    schema = {
+      id: { type: 'INTEGER'},
+      city: {
+        name:"city",
+        type:"RECORD",
+        mode: "nullable",
+        fields: {
+          id: {name:"id", type:"INTEGER" },
+          name: {name:"name", type:"STRING" },
+          country: { name:"country", type:"STRING" },
+          time: { name:"time", type:"TIMESTAMP" }
+        }
+      }
+    }
+
+    result = @bq.create_table('test123', schema)
 
     assert_equal result['kind'], "bigquery#table"
     assert_equal result['tableReference']['tableId'], "test123"
-    assert_equal result['schema']['fields'], [{"name"=>"id", "type"=>"INTEGER"}]
+    assert_equal result['schema']['fields'], [
+      {"name"=>"id", "type"=>"INTEGER"},
+      {
+        "name"=>"city",
+        "type"=>"RECORD",
+        "fields"=>[
+          {"name"=>"id", "type"=>"INTEGER"},
+          {"name"=>"name", "type"=>"STRING"},
+          {"name"=>"country", "type"=>"STRING"},
+          {"name"=>"time", "type"=>"TIMESTAMP"}
+        ]
+      }
+    ]
   end
 
   def test_for_delete_table
@@ -101,7 +128,7 @@ class BigQueryTest < MiniTest::Unit::TestCase
   end
 
   def test_for_insert_job
-    res = @bq.insert_job(query: {query: "SELECT * FROM [#{config['dataset']}.test] LIMIT 1"})
+    result = @bq.insert_job(query: {query: "SELECT * FROM [#{config['dataset']}.test] LIMIT 1"})
 
     assert_equal result['kind'], "bigquery#job"
   end

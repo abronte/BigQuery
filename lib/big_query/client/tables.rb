@@ -121,6 +121,9 @@ module BigQuery
           mode = (ALLOWED_FIELD_MODES & [options[:mode].to_s]).first
           field = { "name" => name.to_s, "type" => type }
           field["mode"] = mode if mode
+          if field["type"] == 'RECORD'
+            field["fields"] = validate_schema(options[:fields])
+          end
           fields << field
         end
         fields
