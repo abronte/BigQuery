@@ -130,6 +130,8 @@ service_email: '1234@developer.gserviceaccount.com'
 key:           '/path/to/somekeyfile-privatekey.p12'
 project_id:    '54321'
 dataset:       'yourdataset'
+faraday_option:
+  timeout: 999
 ```
 
 Then run tests via rake.

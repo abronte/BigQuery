@@ -4,6 +4,12 @@ require 'yaml'
 require 'big_query'
 require 'pry-byebug'
 
+module BigQuery
+  class Client
+    attr_accessor :client
+  end
+end
+
 class BigQueryTest < MiniTest::Unit::TestCase
   def setup
     @bq = BigQuery::Client.new(config)
@@ -17,6 +23,10 @@ class BigQueryTest < MiniTest::Unit::TestCase
     return @config if @config
     config_data ||= File.expand_path(File.dirname(__FILE__) + "/../.bigquery_settings.yml")
     @config = YAML.load_file(config_data)
+  end
+
+  def test_faraday_option_config
+    assert_equal @bq.client.connection.options.timeout, 999
   end
 
   def test_for_tables
