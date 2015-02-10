@@ -1,3 +1,6 @@
+* 0.6.1
+* Include insert module #16
+
 # 0.4.0
 * Added BigQuery::Client#insert_job. https://cloud.google.com/bigquery/docs/reference/v2/jobs/insert
 
