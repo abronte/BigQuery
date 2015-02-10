@@ -2,6 +2,7 @@ require 'big_query/client/errors'
 require 'big_query/client/query'
 require 'big_query/client/jobs'
 require 'big_query/client/tables'
+require 'big_query/client/load'
 
 module BigQuery
   class Client
@@ -9,6 +10,7 @@ module BigQuery
     include BigQuery::Client::Query
     include BigQuery::Client::Jobs
     include BigQuery::Client::Tables
+    include BigQuery::Client::Insert
 
     attr_accessor :dataset, :project_id
 
