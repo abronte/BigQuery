@@ -21,10 +21,7 @@ module BigQuery
         faraday_option: opts['faraday_option']
       )
 
-      key = Google::APIClient::PKCS12.load_key(File.open(
-        opts['key'], mode: 'rb'),
-        "notasecret"
-      )
+      key = Google::APIClient::PKCS12.load_key(opts['key'], 'notasecret')
 
       @asserter = Google::APIClient::JWTAsserter.new(
         opts['service_email'],
