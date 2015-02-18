@@ -23,11 +23,12 @@ module BigQuery
 
       key = Google::APIClient::PKCS12.load_key(opts['key'], 'notasecret')
 
-      @asserter = Google::APIClient::JWTAsserter.new(
-        opts['service_email'],
-        "https://www.googleapis.com/auth/bigquery",
-        key
-      )
+      @client.authorization = Signet::OAuth2::Client.new(
+        token_credential_uri: 'https://accounts.google.com/o/oauth2/token',
+        audience: 'https://accounts.google.com/o/oauth2/token',
+        scope: 'https://www.googleapis.com/auth/bigquery',
+        issuer: opts['service_email'],
+        signing_key: key)
 
       refresh_auth
 
@@ -38,7 +39,7 @@ module BigQuery
     end
 
     def refresh_auth
-      @client.authorization = @asserter.authorize
+      @client.authorization.fetch_access_token!
     end
 
     private
