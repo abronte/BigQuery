@@ -1,4 +1,8 @@
-* 0.6.1
+# 0.7.0
+* Adds support for passing string as key #18
+* Switch to Signet::OAuth2::Client for authorization #17
+
+# 0.6.1
 * Include insert module #16
 
 # 0.4.0
