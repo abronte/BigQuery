@@ -21,7 +21,11 @@ module BigQuery
         faraday_option: opts['faraday_option']
       )
 
-      key = Google::APIClient::PKCS12.load_key(opts['key'], 'notasecret')
+      begin
+        key = Google::APIClient::KeyUtils.load_from_pkcs12(opts['key'], 'notasecret')
+      rescue ArgumentError
+        key = Google::APIClient::KeyUtils.load_from_pem(opts['key'], 'notasecret')
+      end
 
       @client.authorization = Signet::OAuth2::Client.new(
         token_credential_uri: 'https://accounts.google.com/o/oauth2/token',
