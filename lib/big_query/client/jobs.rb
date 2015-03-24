@@ -38,11 +38,15 @@ module BigQuery
 
       # Insert a job
       #
-      # @param options [Hash] hash of job options 
+      # @param options [Hash] hash of job options
+      # @param parameters [Hash] hash of parameters (uploadType, etc.)
+      # @param media [Google::APIClient::UploadIO] media upload
       # @return [Hash] json api response
-      def insert_job(opts)
+      def insert_job(opts, parameters = {}, media = nil)
         api(api_method: @bq.jobs.insert,
-            body_object: {configuration: opts})
+            parameters: parameters,
+            body_object: {configuration: opts},
+            media: media)
       end
     end
   end
