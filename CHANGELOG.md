@@ -1,3 +1,7 @@
+# 0.8.0
+* Allow media and parameters when inserting jobs #20
+* Add query options such as useQueryCache, dryRun, maxResults #22
+
 # 0.7.0
 * Adds support for passing string as key #18
 * Switch to Signet::OAuth2::Client for authorization #17
