@@ -120,6 +120,19 @@ class BigQueryTest < MiniTest::Unit::TestCase
     assert_equal result['jobComplete'], true
   end
 
+  def test_for_query_useQueryCache
+    result = @bq.query("SELECT * FROM [#{config['dataset']}.test] LIMIT 1", useQueryCache: true)
+    result = @bq.query("SELECT * FROM [#{config['dataset']}.test] LIMIT 1", useQueryCache: true)
+
+    assert_equal result['cacheHit'], true
+  end
+
+  def test_for_query_dryRun
+    result = @bq.query("SELECT * FROM [#{config['dataset']}.test] LIMIT 1", dryRun: true)
+
+    assert_equal result['jobReference']['jobId'], nil
+  end
+
   def test_for_insert
     result = @bq.insert('test' ,"id" => 123, "type" => "Task")
 
