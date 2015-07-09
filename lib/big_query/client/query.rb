@@ -47,7 +47,7 @@ module BigQuery
           current_row += res['rows'].size
         end
         # keep grabbing pages from the API and calling the block on each row
-        while(( res = get_query_results(job_id, :startIndex => current_row) ) && res['rows'] && current_row < res['totalRows'].to_i ) do
+        while( current_row < res['totalRows'].to_i && ( res = get_query_results(job_id, :startIndex => current_row) ) && res['rows'] ) do
           res['rows'].each(&block)
           current_row += res['rows'].size
         end
