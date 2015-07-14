@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    bigquery (0.8.2)
-      google-api-client (~> 0.8.2)
+    bigquery (0.8.3)
+      google-api-client (= 0.8.6)
 
 GEM
   remote: https://rubygems.org/
