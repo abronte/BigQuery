@@ -13,6 +13,7 @@ module BigQuery
     include BigQuery::Client::Insert
 
     attr_accessor :dataset, :project_id
+    attr_reader :client
 
     def initialize(opts = {})
       @client = Google::APIClient.new(
