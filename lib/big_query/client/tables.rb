@@ -78,9 +78,11 @@ module BigQuery
                             "projectId" => @project_id,
                             "datasetId" => @dataset
                           },
-                          "schema" => {
-                            "fields" => validate_schema(schema)
-                          }
+                          "schema" => schema
+                          # "schema" => {
+                          #   "fields" => validate_schema(schema)
+                          #   "fields" => validate_schema(schema)
+                          # }
                         }
         )
       end
