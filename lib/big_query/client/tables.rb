@@ -104,7 +104,7 @@ module BigQuery
         api(
           api_method: @bq.tables.get,
           parameters: { 'tableId' => tableId,
-                        'datasetId' => @dataset }
+                        'datasetId' => dataset }
         )
       end
 
