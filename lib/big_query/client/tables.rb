@@ -69,7 +69,7 @@ module BigQuery
       #
       # @bq.create_table('new_table', id: { type: 'INTEGER', mode: 'required' })
       # @bq.create_table('new_table', price: { type: 'FLOAT' })
-      def create_table(tableId, dataset, schema={})
+      def create_table(tableId, schema, dataset = @dataset)
         api(
           api_method: @bq.tables.insert,
           parameters: { "datasetId" => dataset },
