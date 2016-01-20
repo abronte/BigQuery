@@ -95,6 +95,60 @@ module BigQuery
         )
       end
 
+      # Patching a exsiting table
+      #
+      # @param tableId [String] table id to insert into
+      # @param schema [Hash] name => opts hash for the schema
+      #
+      # examples:
+      #
+      # @bq.patch_table('existing_table', id: { type: 'INTEGER', mode: 'required' }, price: { type: 'FLOAT' })
+      # It should be provide entire schema including the difference between the existing schema
+      # Otherwise 'BigQuery::Errors::BigQueryError: Provided Schema does not match Table' occur
+      def patch_table(tableId, schema={})
+        api(
+          api_method: @bq.tables.patch,
+          parameters: { 'tableId' => tableId,
+                        'datasetId' => @dataset },
+          body_object: { 'tableReference' => {
+                            'tableId' => tableId,
+                            'projectId' => @project_id,
+                            'datasetId' => @dataset
+                          },
+                          'schema' => {
+                            'fields' => validate_schema(schema)
+                          }
+                        }
+        )
+      end
+
+      # Updating a exsiting table
+      #
+      # @param tableId [String] table id to insert into
+      # @param schema [Hash] name => opts hash for the schema
+      #
+      # examples:
+      #
+      # @bq.update_table('existing_table', id: { type: 'INTEGER', mode: 'required' }, price: { type: 'FLOAT' })
+      # It should be provide entire schema including the difference between the existing schema
+      # Otherwise 'BigQuery::Errors::BigQueryError: Provided Schema does not match Table' occur
+      def update_table(tableId, schema={})
+        api(
+          api_method: @bq.tables.update,
+          parameters: { 'tableId' => tableId,
+                        'datasetId' => @dataset },
+          body_object: { 'tableReference' => {
+                            'tableId' => tableId,
+                            'projectId' => @project_id,
+                            'datasetId' => @dataset
+                          },
+                          'schema' => {
+                            'fields' => validate_schema(schema)
+                          }
+                        }
+        )
+      end
+
       # Describe the schema of the given tableId
       #
       # @param tableId [String] table id to describe

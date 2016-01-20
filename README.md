@@ -85,11 +85,27 @@ Describe table schema
 Insert a single row
 
     bq.insert('table_name', 'id' => 123, 'type' => 'Task')
-    
+
 Batch insert an array of rows. [See bigquery docs for limitations.](https://cloud.google.com/bigquery/streaming-data-into-bigquery#quota)
 
     data = [{'id' => 123, 'type' => 'Foo'}, {'id' => 321, 'type' => 'Bar'}]
     bq.insert('table_name', data)
+
+# Patching
+
+Patching a exiting table
+
+    bq.patch_table('test', 'id' => 123, 'type' => 'Task', 'name' => 'Task1')
+
+Tables: patch [See bigquery docs for details.](https://cloud.google.com/bigquery/docs/reference/v2/tables/patch)
+
+# Updating
+
+Updating a exiting table
+
+    bq.update_table('test', 'id' => 123, 'type' => 'Task', 'name' => 'Task1')
+
+Tables: update [See bigquery docs for details.](https://cloud.google.com/bigquery/docs/reference/v2/tables/update)
 
 ## Keys
 
