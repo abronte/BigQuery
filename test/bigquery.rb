@@ -98,6 +98,57 @@ class BigQueryTest < MiniTest::Unit::TestCase
     refute_includes tables, 'test123'
   end
 
+  def test_for_patch_table
+    schema = {
+      id: { type: 'INTEGER', mode: 'REQUIRED' },
+      type: { type: 'STRING', mode: 'NULLABLE' },
+      date: { type: 'TIMESTAMP' },
+      city: {
+        name: 'city',
+        type: 'RECORD',
+        mode: 'nullable',
+        fields: {
+          id: { name: 'id', type: 'INTEGER' }
+        }
+      }
+    }
+
+    result = @bq.patch_table('test', schema)
+
+    assert_equal result['kind'], "bigquery#table"
+    assert_equal result['tableReference']['tableId'], "test"
+    assert_equal result['schema']['fields'], [
+      { 'name' => 'id', 'type' => 'INTEGER', 'mode' => 'REQUIRED' },
+      { 'name' => 'type', 'type' => 'STRING', 'mode' => 'NULLABLE' },
+      { 'name' => 'date', 'type' => 'TIMESTAMP' },
+      {
+        'name' => 'city',
+        'type' => 'RECORD',
+        'fields' => [
+          { 'name' => 'id', 'type' => 'INTEGER' },
+        ]
+      }
+    ]
+  end
+
+  def test_for_update_table
+    schema = {
+      id: { type: 'INTEGER', mode: 'REQUIRED' },
+      type: { type: 'STRING', mode: 'NULLABLE' },
+      name: { type: 'STRING' }
+    }
+
+    result = @bq.update_table('test', schema)
+
+    assert_equal result['kind'], "bigquery#table"
+    assert_equal result['tableReference']['tableId'], "test"
+    assert_equal result['schema']['fields'], [
+      { 'name' => 'id', 'type' => 'INTEGER', 'mode' => 'REQUIRED' },
+      { 'name' => 'type', 'type' => 'STRING', 'mode' => 'NULLABLE' },
+      { 'name' => 'name', 'type' => 'STRING' }
+    ]
+  end
+
   def test_for_describe_table
     result = @bq.describe_table('test')
 
