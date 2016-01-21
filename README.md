@@ -14,6 +14,7 @@ Only service accounts are supported right now. https://developers.google.com/acc
 
 * query
 * tables
+* datasets
 * load
 * tables_formatted
 * job
@@ -75,6 +76,24 @@ As this example defines
 Describe table schema
 
     bq.describe_table('table_name')
+
+## Datasets
+
+List datasets in dataset
+
+    bq.datasets
+
+List dataset names
+
+    bq.datasets_formatted
+
+Delete exiting dataset
+
+    bq.delete_dataset('test123')
+
+Create dataset. First param is the dataset name
+
+    bq.create_dataset('test123')
 
 ## Querying
 

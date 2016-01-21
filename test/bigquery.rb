@@ -206,4 +206,40 @@ class BigQueryTest < MiniTest::Unit::TestCase
 
     assert_equal result['kind'], "bigquery#job"
   end
+
+  def test_for_datasets
+    dataset = @bq.datasets.select{|t| t['id'] == "#{config['project_id']}:#{config['dataset']}"}.first
+
+    assert_equal dataset['kind'], "bigquery#dataset"
+    assert_equal dataset['datasetReference']['datasetId'], config['dataset']
+  end
+
+  def test_for_datasets_formatted
+    result = @bq.datasets_formatted
+
+    assert_includes result, config['dataset']
+  end
+
+  def test_for_create_datasets
+    if @bq.datasets_formatted.include? 'test123'
+      @bq.delete_dataset('test123')
+    end
+
+    result = @bq.create_dataset('test123')
+
+    assert_equal result['kind'], "bigquery#dataset"
+    assert_equal result['datasetReference']['datasetId'], 'test123'
+  end
+
+  def test_for_delete_datasets
+    if !@bq.datasets_formatted.include? 'test123'
+      @bq.create_dataset('test123')
+    end
+
+    result = @bq.delete_dataset('test123')
+
+    datasets = @bq.datasets_formatted
+
+    refute_includes datasets, 'test123'
+  end
 end
