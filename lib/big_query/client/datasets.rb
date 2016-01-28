@@ -5,9 +5,10 @@ module BigQuery
       # Lists the datasets
       #
       # @return [Hash] json api response
-      def datasets
+      def datasets(parameters = {})
         response = api({
-          :api_method => @bq.datasets.list,
+          api_method: @bq.datasets.list,
+          parameters: parameters
         })
 
         response['datasets'] || []
@@ -16,8 +17,8 @@ module BigQuery
       # Lists the datasets returnning only the tableId
       #
       # @return [Hash] json api response
-      def datasets_formatted
-        datasets.map { |t| t['datasetReference']['datasetId'] }
+      def datasets_formatted(parameters = {})
+        datasets(parameters).map { |t| t['datasetReference']['datasetId'] }
       end
 
       # Creating a new dataset
