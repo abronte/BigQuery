@@ -14,7 +14,10 @@ module BigQuery
       def tables(dataset = @dataset)
         response = api({
           :api_method => @bq.tables.list,
-          :parameters => {"datasetId" => dataset}
+          :parameters => {
+            "datasetId" => dataset,
+            "maxResults" => 9999999 # default is 50
+          }
         })
 
         response['tables'] || []
