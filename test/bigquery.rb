@@ -48,6 +48,19 @@ class BigQueryTest < MiniTest::Unit::TestCase
     assert_kind_of Array, result
   end
 
+  def test_for_table_data_maxResults
+    result = @bq.table_data('test', @bq.dataset, maxResults: 100)
+
+    assert_kind_of Array, result
+  end
+
+  def test_for_table_data_startIndex
+    # startIndex is Zero-based
+    result = @bq.table_data('test', @bq.dataset, maxResults: 100, startIndex: 100)
+
+    assert_kind_of Array, result
+  end
+
   def test_for_create_table
     if @bq.tables_formatted.include? 'test123'
       @bq.delete_table('test123')
