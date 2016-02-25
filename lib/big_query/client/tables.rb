@@ -35,7 +35,7 @@ module BigQuery
       #
       # @param tableId [String] id of the table to look for
       # @param dataset [String] dataset to look for
-      # @param opts [Hash] hash of optional query parameters (maxResults, startIndex)
+      # @param options [Hash] hash of optional query parameters (maxResults, startIndex)
       # @return [Hash] json api response
       def table_data(tableId, dataset = @dataset, options = {})
         parameters = { 'datasetId' => dataset, 'tableId' => tableId }
