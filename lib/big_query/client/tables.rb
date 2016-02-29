@@ -31,6 +31,20 @@ module BigQuery
         tables(dataset).map { |t| t['tableReference']['tableId'] }
       end
 
+      # Returns entire response of table data
+      #
+      # @param tableId [String] id of the table to look for
+      # @param dataset [String] dataset to look for
+      # @param options [Hash] hash of optional query parameters (maxResults, startIndex)
+      # @return [Hash] json api response
+      def table_raw_data(tableId, dataset = @dataset, options = {})
+        parameters = { 'datasetId' => dataset, 'tableId' => tableId }
+        parameters['maxResults'] = options[:maxResults] if options[:maxResults]
+        parameters['startIndex'] = options[:startIndex] if options[:startIndex]
+        api(api_method: @bq.tabledata.list,
+                       parameters: parameters)
+      end
+
       # Returns all rows of table data
       #
       # @param tableId [String] id of the table to look for
@@ -38,11 +52,7 @@ module BigQuery
       # @param options [Hash] hash of optional query parameters (maxResults, startIndex)
       # @return [Hash] json api response
       def table_data(tableId, dataset = @dataset, options = {})
-        parameters = { 'datasetId' => dataset, 'tableId' => tableId }
-        parameters['maxResults'] = options[:maxResults] if options[:maxResults]
-        parameters['startIndex'] = options[:startIndex] if options[:startIndex]
-        response = api(api_method: @bq.tabledata.list,
-                       parameters: parameters)
+        response = table_raw_data(tableId, dataset, options)
         response['rows'] || []
       end
 
