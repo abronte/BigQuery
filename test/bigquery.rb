@@ -84,18 +84,18 @@ class BigQueryTest < MiniTest::Unit::TestCase
 
     result = @bq.create_table('test123', schema)
 
-    assert_equal result['kind'], 'bigquery#table'
-    assert_equal result['tableReference']['tableId'], 'test123'
+    assert_equal result['kind'], "bigquery#table"
+    assert_equal result['tableReference']['tableId'], "test123"
     assert_equal result['schema']['fields'], [
       {"name"=>'id', "type"=>'INTEGER'},
       {
         "name"=>"city",
         "type"=>"RECORD",
         "fields"=>[
-          { "name"=>"id", "type"=>"INTEGER" },
-          { "name"=>"name", "type"=>"STRING" },
-          { "name"=>"country", "type"=>"STRING" },
-          { "name"=>"time", "type"=>"TIMESTAMP" }
+          {"name"=>"id", "type"=>"INTEGER"},
+          {"name"=>"name", "type"=>"STRING"},
+          {"name"=>"country", "type"=>"STRING"},
+          {"name"=>"time", "type"=>"TIMESTAMP"}
         ]
       }
     ]
@@ -132,14 +132,14 @@ class BigQueryTest < MiniTest::Unit::TestCase
     assert_equal result['kind'], "bigquery#table"
     assert_equal result['tableReference']['tableId'], "test"
     assert_equal result['schema']['fields'], [
-      { "name"=>"id", "type"=>"INTEGER", "mode"=>"REQUIRED" },
-      { "name"=>"type", "type"=>"STRING", "mode"=>"NULLABLE" },
-      { "name"=>"date", "type"=>"TIMESTAMP" },
+      { 'name' => 'id', 'type' => 'INTEGER', 'mode' => 'REQUIRED' },
+      { 'name' => 'type', 'type' => 'STRING', 'mode' => 'NULLABLE' },
+      { 'name' => 'date', 'type' => 'TIMESTAMP' },
       {
-        "name"=>"city",
-        "type"=>"RECORD",
-        "fields"=>[
-          { "name"=>"id", "type"=>"INTEGER" },
+        'name' => 'city',
+        'type' => 'RECORD',
+        'fields' => [
+          { 'name' => 'id', 'type'=>'INTEGER' },
         ]
       }
     ]
@@ -157,9 +157,9 @@ class BigQueryTest < MiniTest::Unit::TestCase
     assert_equal result['kind'], "bigquery#table"
     assert_equal result['tableReference']['tableId'], "test"
     assert_equal result['schema']['fields'], [
-      { "name"=>"id", "type"=>"INTEGER", "mode"=>"REQUIRED" },
-      { "name"=>"type", "type"=>"STRING", "mode"=>"NULLABLE" },
-      { "name"=>"name", "type"=>"STRING" }
+      { 'name' => 'id', 'type' => 'INTEGER', 'mode' => 'REQUIRED' },
+      { 'name' => 'type', 'type' => 'STRING', 'mode' => 'NULLABLE' },
+      { 'name' => 'name', 'type' => 'STRING' }
     ]
   end
 
@@ -195,7 +195,7 @@ class BigQueryTest < MiniTest::Unit::TestCase
   def test_for_query_dryRun
     result = @bq.query("SELECT * FROM [#{config['dataset']}.test] LIMIT 1", dryRun: true)
 
-    assert_equal result['jobReference']['.jobId'], nil
+    assert_equal result['jobReference']['jobId'], nil
   end
 
   def test_for_insert
@@ -216,7 +216,7 @@ class BigQueryTest < MiniTest::Unit::TestCase
   end
 
   def test_for_insert_job
-    result = @bq.insert_job('query' => {'query' => "SELECT * FROM [#{config['dataset']}.test] LIMIT 1"})
+    result = @bq.insert_job(query: {query: "SELECT * FROM [#{config['dataset']}.test] LIMIT 1"})
 
     assert_equal result['kind'], "bigquery#job"
   end
