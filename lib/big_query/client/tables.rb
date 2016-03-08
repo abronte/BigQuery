@@ -205,9 +205,9 @@ module BigQuery
           if field["type"] == 'RECORD'
             field["fields"] = validate_schema(options[:fields])
           end
-          fields << field
+          fields << deep_symbolize_keys(field)
         end
-        normalize_schema(fields)
+        fields
       end
     end
   end

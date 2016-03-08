@@ -7,7 +7,6 @@ require 'big_query/client/load'
 require 'big_query/client/hashable'
 require 'big_query/client/options'
 require 'big_query/client/response'
-require 'big_query/client/schema'
 
 module BigQuery
   class Client
@@ -20,7 +19,6 @@ module BigQuery
     include BigQuery::Client::Hashable
     include BigQuery::Client::Options
     include BigQuery::Client::Response
-    include BigQuery::Client::Schema
 
     attr_accessor :dataset, :project_id
 
