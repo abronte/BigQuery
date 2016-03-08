@@ -9,7 +9,7 @@ module BigQuery
       # @return [Hash]
       def load(opts)
         job_configuration = Google::Apis::BigqueryV2::JobConfiguration.new(
-          load: _load(opts.deep_symbolize_keys)
+          load: _load(deep_symbolize_keys(opts))
         )
         job_configuration.dry_run = (opts['dryRun'] || opts[:dry_run]) if (opts['dryRun'] || opts[:dry_run])
         job = Google::Apis::BigqueryV2::Job.new(

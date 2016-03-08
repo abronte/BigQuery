@@ -12,13 +12,14 @@ module BigQuery
       # @param dataset [String] dataset to look for
       # @return [Hash] json api response
       def tables(dataset = @dataset)
-        response = @client.list_tables(
-          @project_id,
-          dataset,
-          max_results: 9999999 # default is 50
+        response = api(
+          @client.list_tables(
+            @project_id,
+            dataset,
+            max_results: 9999999 # default is 50
+          )
         )
-
-        response.tables || []
+        response['tables'] || []
       end
 
       # Lists the tables returnning only the tableId
@@ -26,7 +27,7 @@ module BigQuery
       # @param dataset [String] dataset to look for
       # @return [Hash] json api response
       def tables_formatted(dataset = @dataset)
-        tables(dataset).map { |t| t.table_reference.table_id }
+        tables(dataset).map { |t| t['tableReference']['tableId'] }
       end
 
       # Returns entire response of table data
@@ -41,14 +42,14 @@ module BigQuery
         option_parameters[:max_results] = options[:maxResults] if options[:maxResults]
         option_parameters[:start_index] = options[:startIndex] if options[:startIndex]
 
-        response = @client.list_table_data(
-          @project_id,
-          dataset_id,
-          table_id,
-          option_parameters
+        api(
+          @client.list_table_data(
+            @project_id,
+            dataset_id,
+            table_id,
+            option_parameters
+          )
         )
-
-        response.to_h.deep_stringify_keys
       end
 
       # Returns all rows of table data
@@ -59,7 +60,7 @@ module BigQuery
       # @return [Hash] json api response
       def table_data(table_id, dataset_id = @dataset, options = {})
         response = table_raw_data(table_id, dataset_id, options)
-        response.rows || []
+        response['rows'] || []
       end
 
       # insert row into table
@@ -77,14 +78,14 @@ module BigQuery
           request.rows = [row]
         end
 
-        response = @client.insert_all_table_data(
-          @project_id,
-          @dataset,
-          table_id,
-          request
+        api(
+          @client.insert_all_table_data(
+            @project_id,
+            @dataset,
+            table_id,
+            request
+          )
         )
-
-        response.to_h.deep_stringify_keys
       end
 
       # Creating a new table
@@ -101,10 +102,12 @@ module BigQuery
           table_reference: { project_id: @project_id, dataset_id: @dataset, table_id: table_id },
           schema: { fields: validate_schema(schema) }
         )
-        @client.insert_table(
-          @project_id,
-          @dataset,
-          table
+        api(
+          @client.insert_table(
+            @project_id,
+            @dataset,
+            table
+          )
         )
       end
 
@@ -112,10 +115,12 @@ module BigQuery
       #
       # @param table_id [String] table id to insert into
       def delete_table(table_id)
-        @client.delete_table(
-          @project_id,
-          @dataset,
-          table_id
+        api(
+          @client.delete_table(
+            @project_id,
+            @dataset,
+            table_id
+          )
         )
       end
 
@@ -141,7 +146,7 @@ module BigQuery
           table
         )
 
-        response.to_h.deep_stringify_keys
+        deep_stringify_keys(response.to_h)
       end
 
       # Updating a exsiting table
@@ -167,7 +172,7 @@ module BigQuery
         )
 
 
-        response.to_h.deep_stringify_keys
+        deep_stringify_keys(response.to_h)
       end
 
       # Describe the schema of the given tableId
@@ -182,7 +187,7 @@ module BigQuery
           table_id
         )
 
-        response.to_h.deep_stringify_keys
+        deep_stringify_keys(response.to_h)
       end
 
       protected

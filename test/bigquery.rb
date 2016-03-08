@@ -30,10 +30,10 @@ class BigQueryTest < MiniTest::Unit::TestCase
   end
 
   def test_for_tables
-    table = @bq.tables.select{|t| t.id == "#{config['project_id']}:#{config['dataset']}.test"}.first
+    table = @bq.tables.select{|t| t['id'] == "#{config['project_id']}:#{config['dataset']}.test"}.first
 
-    assert_equal table.kind, "bigquery#table"
-    assert_equal table.table_reference.table_id, 'test'
+    assert_equal table['kind'], "bigquery#table"
+    assert_equal table['tableReference']['tableId'], 'test'
   end
 
   def test_for_tables_formatted
@@ -45,8 +45,8 @@ class BigQueryTest < MiniTest::Unit::TestCase
   def test_for_table_raw_data
     result = @bq.table_raw_data('test')
 
-    assert_kind_of Google::Apis::BigqueryV2::TableDataList, result
-    assert_equal result.kind, "bigquery#tableDataList"
+    assert_kind_of Hash, result
+    assert_equal result['kind'], "bigquery#tableDataList"
   end
 
   def test_for_table_data_maxResults
@@ -84,18 +84,18 @@ class BigQueryTest < MiniTest::Unit::TestCase
 
     result = @bq.create_table('test123', schema)
 
-    assert_equal result.kind, 'bigquery#table'
-    assert_equal result.table_reference.table_id, 'test123'
-    assert_equal result.schema.fields.map(&:to_h), [
-      {name: 'id', type: 'INTEGER'},
+    assert_equal result['kind'], 'bigquery#table'
+    assert_equal result['tableReference']['tableId'], 'test123'
+    assert_equal result['schema']['fields'], [
+      {"name"=>'id', "type"=>'INTEGER'},
       {
-        name: 'city',
-        type: 'RECORD',
-        fields: [
-          { name: 'id', type: 'INTEGER' },
-          { name: 'name', type: 'STRING' },
-          { name: 'country', type: 'STRING' },
-          { name: 'time', type: 'TIMESTAMP' }
+        "name"=>"city",
+        "type"=>"RECORD",
+        "fields"=>[
+          { "name"=>"id", "type"=>"INTEGER" },
+          { "name"=>"name", "type"=>"STRING" },
+          { "name"=>"country", "type"=>"STRING" },
+          { "name"=>"time", "type"=>"TIMESTAMP" }
         ]
       }
     ]
@@ -129,17 +129,17 @@ class BigQueryTest < MiniTest::Unit::TestCase
 
     result = @bq.patch_table('test', schema)
 
-    assert_equal result.kind, "bigquery#table"
-    assert_equal result.table_reference.table_id, "test"
-    assert_equal result.schema.fields.map(&:to_h), [
-      { name: 'id', type: 'INTEGER', mode: 'REQUIRED' },
-      { name: 'type', type: 'STRING', mode: 'NULLABLE' },
-      { name: 'date', type: 'TIMESTAMP' },
+    assert_equal result['kind'], "bigquery#table"
+    assert_equal result['tableReference']['tableId'], "test"
+    assert_equal result['schema']['fields'], [
+      { "name"=>"id", "type"=>"INTEGER", "mode"=>"REQUIRED" },
+      { "name"=>"type", "type"=>"STRING", "mode"=>"NULLABLE" },
+      { "name"=>"date", "type"=>"TIMESTAMP" },
       {
-        name: 'city',
-        type: 'RECORD',
-        fields: [
-          { name: 'id', type: 'INTEGER' },
+        "name"=>"city",
+        "type"=>"RECORD",
+        "fields"=>[
+          { "name"=>"id", "type"=>"INTEGER" },
         ]
       }
     ]
@@ -154,54 +154,54 @@ class BigQueryTest < MiniTest::Unit::TestCase
 
     result = @bq.update_table('test', schema)
 
-    assert_equal result.kind, "bigquery#table"
-    assert_equal result.table_reference.table_id, "test"
-    assert_equal result.schema.fields.map(&:to_h), [
-      { name: 'id', type: 'INTEGER', mode: 'REQUIRED' },
-      { name: 'type', type: 'STRING', mode: 'NULLABLE' },
-      { name: 'name', type: 'STRING' }
+    assert_equal result['kind'], "bigquery#table"
+    assert_equal result['tableReference']['tableId'], "test"
+    assert_equal result['schema']['fields'], [
+      { "name"=>"id", "type"=>"INTEGER", "mode"=>"REQUIRED" },
+      { "name"=>"type", "type"=>"STRING", "mode"=>"NULLABLE" },
+      { "name"=>"name", "type"=>"STRING" }
     ]
   end
 
   def test_for_describe_table
     result = @bq.describe_table('test')
 
-    assert_equal result.kind, "bigquery#table"
-    assert_equal result.type, "TABLE"
-    assert_equal result.id, "#{config['project_id']}:#{config['dataset']}.test"
-    assert_equal result.table_reference.table_id, 'test'
-    assert_equal result.schema.fields[0].name, 'id'
-    assert_equal result.schema.fields[0].type, 'INTEGER'
-    assert_equal result.schema.fields[0].mode, 'REQUIRED'
-    assert_equal result.schema.fields[1].name, 'type'
-    assert_equal result.schema.fields[1].type, 'STRING'
-    assert_equal result.schema.fields[1].mode, 'NULLABLE'
+    assert_equal result['kind'], "bigquery#table"
+    assert_equal result['type'], "TABLE"
+    assert_equal result['id'], "#{config['project_id']}:#{config['dataset']}.test"
+    assert_equal result['tableReference']['tableId'], 'test'
+    assert_equal result['schema']['fields'][0]['name'], 'id'
+    assert_equal result['schema']['fields'][0]['type'], 'INTEGER'
+    assert_equal result['schema']['fields'][0]['mode'], 'REQUIRED'
+    assert_equal result['schema']['fields'][1]['name'], 'type'
+    assert_equal result['schema']['fields'][1]['type'], 'STRING'
+    assert_equal result['schema']['fields'][1]['mode'], 'NULLABLE'
   end
 
   def test_for_query
     result = @bq.query("SELECT * FROM [#{config['dataset']}.test] LIMIT 1")
 
-    assert_equal result.kind, "bigquery#queryResponse"
-    assert_equal result.job_complete, true
+    assert_equal result['kind'], "bigquery#queryResponse"
+    assert_equal result['jobComplete'], true
   end
 
   def test_for_query_useQueryCache
     result = @bq.query("SELECT * FROM [#{config['dataset']}.test] LIMIT 1", useQueryCache: true)
     result = @bq.query("SELECT * FROM [#{config['dataset']}.test] LIMIT 1", useQueryCache: true)
 
-    assert_equal result.cache_hit, true
+    assert_equal result['cacheHit'], true
   end
 
   def test_for_query_dryRun
     result = @bq.query("SELECT * FROM [#{config['dataset']}.test] LIMIT 1", dryRun: true)
 
-    assert_equal result.job_reference.job_id, nil
+    assert_equal result['jobReference']['.jobId'], nil
   end
 
   def test_for_insert
     result = @bq.insert('test' ,"id" => 123, "type" => "Task")
 
-    assert_equal result.kind, "bigquery#tableDataInsertAllResponse"
+    assert_equal result['kind'], "bigquery#tableDataInsertAllResponse"
   end
 
   def test_for_insert_array
@@ -212,20 +212,20 @@ class BigQueryTest < MiniTest::Unit::TestCase
 
     result = @bq.insert('test' , data)
 
-    assert_equal result.kind, "bigquery#tableDataInsertAllResponse"
+    assert_equal result['kind'], "bigquery#tableDataInsertAllResponse"
   end
 
   def test_for_insert_job
     result = @bq.insert_job('query' => {'query' => "SELECT * FROM [#{config['dataset']}.test] LIMIT 1"})
 
-    assert_equal result.kind, "bigquery#job"
+    assert_equal result['kind'], "bigquery#job"
   end
 
   def test_for_datasets
-    dataset = @bq.datasets.select{|t| t.id == "#{config['project_id']}:#{config['dataset']}"}.first
+    dataset = @bq.datasets.select{|t| t['id'] == "#{config['project_id']}:#{config['dataset']}"}.first
 
-    assert_equal dataset.kind, "bigquery#dataset"
-    assert_equal dataset.dataset_reference.dataset_id, config['dataset']
+    assert_equal dataset['kind'], "bigquery#dataset"
+    assert_equal dataset['datasetReference']['datasetId'], config['dataset']
   end
 
   def test_for_datasets_formatted
@@ -241,8 +241,8 @@ class BigQueryTest < MiniTest::Unit::TestCase
 
     result = @bq.create_dataset('test123')
 
-    assert_equal result.kind, "bigquery#dataset"
-    assert_equal result.dataset_reference.dataset_id, 'test123'
+    assert_equal result['kind'], "bigquery#dataset"
+    assert_equal result['datasetReference']['datasetId'], 'test123'
   end
 
   def test_for_delete_datasets

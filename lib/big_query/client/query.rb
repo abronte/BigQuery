@@ -20,12 +20,12 @@ module BigQuery
         query_request.dry_run          = options[:dryRun] if options.has_key?(:dryRun)
         query_request.use_query_cache  = options[:useQueryCache] if options.has_key?(:useQueryCache)
 
-        response = @client.query_job(
-          @project_id,
-          query_request
+        api(
+          @client.query_job(
+            @project_id,
+            query_request
+          )
         )
-
-        response.to_h.deep_stringify_keys
       end
 
       # perform a query synchronously

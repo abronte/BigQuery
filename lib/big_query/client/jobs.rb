@@ -9,13 +9,13 @@ module BigQuery
       # @param options [Hash] bigquery opts accepted
       # @return [Hash] json api response
       def job(id, opts = {})
-        response = @client.get_job(
-          @project_id,
-          id,
-          opts.deep_symbolize_keys
+        api(
+          @client.get_job(
+            @project_id,
+            id,
+            deep_symbolize_keys(opts)
+          )
         )
-
-        response.to_h.deep_stringify_keys
       end
 
       # lists all the jobs
@@ -23,12 +23,12 @@ module BigQuery
       # @param options [Hash] bigquery opts accepted
       # @return [Hash] json api response
       def jobs(opts = {})
-        response = @client.list_jobs(
-          @project_id,
-          opts.deep_symbolize_keys
+        api(
+          @client.list_jobs(
+            @project_id,
+            deep_symbolize_keys(opts)
+          )
         )
-
-        response.to_h.deep_stringify_keys
       end
 
       # Gets the results of a given job
@@ -38,11 +38,11 @@ module BigQuery
       # @return [Hash] json api response
       def get_query_results(id, opts = {})
 
-        response = @client.get_job_query_results(
-          @project_id, id, opts.deep_symbolize_keys
+        api(
+          @client.get_job_query_results(
+            @project_id, id, deep_symbolize_keys(opts)
+          )
         )
-
-        response.to_h.deep_stringify_keys
       end
 
       # Insert a job
@@ -52,9 +52,9 @@ module BigQuery
       # @param media [Google::APIClient::UploadIO] media upload
       # @return [Hash] json api response
       def insert_job(opts, parameters = {}, media = nil)
-        _opts = opts.deep_symbolize_keys
+        _opts = deep_symbolize_keys(opts)
         job_type = _opts.keys.find { |k| [:copy, :extract, :load, :query].include?(k.to_sym) }
-        job_type_configuration = __send__("_#{job_type.to_s}", _opts[job_type].deep_symbolize_keys)
+        job_type_configuration = __send__("_#{job_type.to_s}", deep_symbolize_keys(_opts[job_type]))
         job_configuration = Google::Apis::BigqueryV2::JobConfiguration.new(
           job_type.to_sym => job_type_configuration
         )
@@ -62,13 +62,13 @@ module BigQuery
         job = Google::Apis::BigqueryV2::Job.new(
           configuration: job_configuration
         )
-        response = @client.insert_job(
-          @project_id,
-          job,
-          upload_source: media
+        api(
+          @client.insert_job(
+            @project_id,
+            job,
+            upload_source: media
+          )
         )
-
-        response.to_h.deep_stringify_keys
       end
 
       private

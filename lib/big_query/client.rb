@@ -4,6 +4,10 @@ require 'big_query/client/jobs'
 require 'big_query/client/tables'
 require 'big_query/client/datasets'
 require 'big_query/client/load'
+require 'big_query/client/hashable'
+require 'big_query/client/options'
+require 'big_query/client/response'
+require 'big_query/client/schema'
 
 module BigQuery
   class Client
@@ -13,6 +17,10 @@ module BigQuery
     include BigQuery::Client::Tables
     include BigQuery::Client::Datasets
     include BigQuery::Client::Insert
+    include BigQuery::Client::Hashable
+    include BigQuery::Client::Options
+    include BigQuery::Client::Response
+    include BigQuery::Client::Schema
 
     attr_accessor :dataset, :project_id
 
@@ -33,7 +41,7 @@ module BigQuery
       if opts['faraday_option'].is_a?(Hash)
         @client.request_options.timeout_sec = opts['faraday_option']['timeout']
         @client.request_options.open_timeout_sec = opts['faraday_option']['open_timeout']
-      # We accept the request_option instead of faraday_options
+      # We accept the request_option instead of faraday_option
       elsif opts['request_option'].is_a?(Hash)
         @client.request_options.timeout_sec = opts['request_option']['timeout_sec']
         @client.request_options.open_timeout_sec = opts['request_option']['open_timeout_sec']
@@ -64,29 +72,10 @@ module BigQuery
 
     private
 
-    def normalize_schema(schema)
-      schema.map do |s|
-        if s.respond_to?(:[])
-          f = {
-            name: (s[:name] || s["name"]),
-            type: (s[:type] || s["type"])
-          }
-          f[:mode] = (s[:mode] || s["mode"]) if (s[:mode] || s["mode"])
-          if (sub_fields = (s[:fields] || s["fields"]))
-            f[:fields] = normalize_schema(sub_fields)
-          end
-        else
-          f = {
-            name: s.name,
-            type: s.type
-          }
-          f[:mode] = f.mode if f.mode
-          if (sub_fields = f.fields)
-            f[:fields] = normalize_schema(sub_fields)
-          end
-        end
-        f
-      end
+    def api(resp)
+      data = deep_stringify_keys(resp.to_h)
+      handle_error(data) if data && is_error?(data)
+      data
     end
   end
 end
