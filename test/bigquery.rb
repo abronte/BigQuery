@@ -87,7 +87,7 @@ class BigQueryTest < MiniTest::Unit::TestCase
     assert_equal result['kind'], "bigquery#table"
     assert_equal result['tableReference']['tableId'], "test123"
     assert_equal result['schema']['fields'], [
-      {"name"=>'id', "type"=>'INTEGER'},
+      {"name"=>"id", "type"=>"INTEGER"},
       {
         "name"=>"city",
         "type"=>"RECORD",
@@ -139,7 +139,7 @@ class BigQueryTest < MiniTest::Unit::TestCase
         'name' => 'city',
         'type' => 'RECORD',
         'fields' => [
-          { 'name' => 'id', 'type'=>'INTEGER' },
+          { 'name' => 'id', 'type' => 'INTEGER' },
         ]
       }
     ]
