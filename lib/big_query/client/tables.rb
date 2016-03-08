@@ -139,14 +139,14 @@ module BigQuery
           table_reference: { project_id: @project_id, dataset_id: @dataset, table_id: table_id },
           schema: { fields: validate_schema(schema) }
         )
-        response = @client.patch_table(
-          @project_id,
-          @dataset,
-          table_id,
-          table
+        api(
+          @client.patch_table(
+            @project_id,
+            @dataset,
+            table_id,
+            table
+          )
         )
-
-        deep_stringify_keys(response.to_h)
       end
 
       # Updating a exsiting table
@@ -164,15 +164,14 @@ module BigQuery
           table_reference: { project_id: @project_id, dataset_id: @dataset, table_id: table_id },
           schema: { fields: validate_schema(schema) }
         )
-        response = @client.update_table(
-          @project_id,
-          @dataset,
-          table_id,
-          table
+        api(
+          @client.update_table(
+            @project_id,
+            @dataset,
+            table_id,
+            table
+          )
         )
-
-
-        deep_stringify_keys(response.to_h)
       end
 
       # Describe the schema of the given tableId
@@ -181,13 +180,13 @@ module BigQuery
       # @param dataset [String] dataset to look for
       # @return [Hash] json api response
       def describe_table(table_id, dataset = @dataset)
-        response = @client.get_table(
-          @project_id,
-          dataset,
-          table_id
+        api(
+          @client.get_table(
+            @project_id,
+            dataset,
+            table_id
+          )
         )
-
-        deep_stringify_keys(response.to_h)
       end
 
       protected
