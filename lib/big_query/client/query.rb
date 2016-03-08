@@ -12,18 +12,20 @@ module BigQuery
       # @return [Hash] json api response
       # @see https://cloud.google.com/bigquery/docs/reference/v2/jobs/query
       def query(given_query, options={})
-        body_object = { 'query' => given_query }
-        body_object['timeoutMs']     = options[:timeout] || options[:timeoutMs] || 90 * 1000
-        body_object['maxResults']    = options[:maxResults] if options[:maxResults]
-        body_object['dryRun']        = options[:dryRun] if options.has_key?(:dryRun)
-        body_object['useQueryCache'] = options[:useQueryCache] if options.has_key?(:useQueryCache)
+        query_request = Google::Apis::BigqueryV2::QueryRequest.new(
+          query: given_query,
+        )
+        query_request.timeout_ms       = options[:timeout] || options[:timeoutMs] || 90 * 1000
+        query_request.max_results      = options[:maxResults] if options[:maxResults]
+        query_request.dry_run          = options[:dryRun] if options.has_key?(:dryRun)
+        query_request.use_query_cache  = options[:useQueryCache] if options.has_key?(:useQueryCache)
 
-        response = api(
-          api_method: @bq.jobs.query,
-          body_object: body_object,
+        response = @client.query_job(
+          @project_id,
+          query_request
         )
 
-        response
+        response.to_h.deep_stringify_keys
       end
 
       # perform a query synchronously

@@ -17,11 +17,27 @@ module BigQuery
     attr_accessor :dataset, :project_id
 
     def initialize(opts = {})
-      @client = Google::APIClient.new(
-        application_name: 'BigQuery ruby app',
-        application_version: BigQuery::VERSION,
-        faraday_option: opts['faraday_option']
-      )
+      # for debug
+      # Google::Apis.logger.level = Logger::DEBUG
+
+      @client = Google::Apis::BigqueryV2::BigqueryService.new
+
+      @client.client_options.application_name = 'BigQuery ruby app'
+      @client.client_options.application_version = BigQuery::VERSION
+
+      # Memo:
+      # The google-api-client 0.9 is HTTP Client no longer in Faraday
+      # We accepts the options for backward compatibility
+      # (HTTP Client is replaced in the near future HTTP::Client...)
+      # https://github.com/google/google-api-ruby-client/issues/336#issuecomment-179400592
+      if opts['faraday_option'].is_a?(Hash)
+        @client.request_options.timeout_sec = opts['faraday_option']['timeout']
+        @client.request_options.open_timeout_sec = opts['faraday_option']['open_timeout']
+      # We accept the request_option instead of faraday_options
+      elsif opts['request_option'].is_a?(Hash)
+        @client.request_options.timeout_sec = opts['request_option']['timeout_sec']
+        @client.request_options.open_timeout_sec = opts['request_option']['open_timeout_sec']
+      end
 
       begin
         key = Google::APIClient::KeyUtils.load_from_pkcs12(opts['key'], 'notasecret')
@@ -38,8 +54,6 @@ module BigQuery
 
       refresh_auth
 
-      @bq = @client.discovered_api("bigquery", "v2")
-
       @project_id = opts['project_id']
       @dataset = opts['dataset']
     end
@@ -50,31 +64,29 @@ module BigQuery
 
     private
 
-    # Performs the api calls with the given params adding the defined project and
-    # dataset params if not defined
-    #
-    # @param opts [Hash] options for the api call
-    # @return [Hash] json response
-    def api(opts)
-      if opts[:parameters]
-        opts[:parameters] = opts[:parameters].merge({"projectId" => @project_id})
-      else
-        opts[:parameters] = {"projectId" => @project_id}
+    def normalize_schema(schema)
+      schema.map do |s|
+        if s.respond_to?(:[])
+          f = {
+            name: (s[:name] || s["name"]),
+            type: (s[:type] || s["type"])
+          }
+          f[:mode] = (s[:mode] || s["mode"]) if (s[:mode] || s["mode"])
+          if (sub_fields = (s[:fields] || s["fields"]))
+            f[:fields] = normalize_schema(sub_fields)
+          end
+        else
+          f = {
+            name: s.name,
+            type: s.type
+          }
+          f[:mode] = f.mode if f.mode
+          if (sub_fields = f.fields)
+            f[:fields] = normalize_schema(sub_fields)
+          end
+        end
+        f
       end
-
-      resp = @client.execute(opts)
-      data = parse_body(resp)
-      handle_error(data) if data && is_error?(data)
-      data
-    end
-
-    # Parses json body if present and is a json formatted
-    #
-    # @param resp [Faraday::Response] response object
-    # @return [Hash]
-    def parse_body(resp)
-      return nil unless resp.body && !resp.body.empty?
-      JSON.parse(resp.body)
     end
   end
 end

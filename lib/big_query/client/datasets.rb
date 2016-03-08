@@ -6,19 +6,19 @@ module BigQuery
       #
       # @return [Hash] json api response
       def datasets(parameters = {})
-        response = api({
-          api_method: @bq.datasets.list,
-          parameters: parameters
-        })
+        response = @client. list_datasets(
+          @project_id,
+          parameters
+        )
 
-        response['datasets'] || []
+        response.datasets || []
       end
 
       # Lists the datasets returnning only the tableId
       #
       # @return [Hash] json api response
       def datasets_formatted(parameters = {})
-        datasets(parameters).map { |t| t['datasetReference']['datasetId'] }
+        datasets(parameters).map { |t| t.dataset_reference.dataset_id }
       end
 
       # Creating a new dataset
@@ -29,23 +29,23 @@ module BigQuery
       # examples:
       #
       # @bq.create_dataset('new_dataset')
-      def create_dataset(datasetId)
-        api(
-          api_method: @bq.datasets.insert,
-          body_object: { "datasetReference" => {
-                            "datasetId" => datasetId,
-                            "projectId" => @project_id,
-                          }
-                        }
+      def create_dataset(dataset_id)
+        dataset = Google::Apis::BigqueryV2::Dataset.new(
+          dataset_reference:  { project_id: @project_id, dataset_id: dataset_id }
+        )
+        @client.insert_dataset(
+          @project_id,
+          dataset
         )
       end
 
       # Deletes the given datasetId
       #
       # @param datasetId [String] dataset id to insert into
-      def delete_dataset(datasetId)
-        api(api_method: @bq.datasets.delete,
-            parameters: { 'datasetId' => datasetId }
+      def delete_dataset(dataset_id)
+        @client.delete_dataset(
+          @project_id,
+          dataset_id
         )
       end
     end
