@@ -42,10 +42,11 @@ class BigQueryTest < MiniTest::Unit::TestCase
     assert_includes result, 'test'
   end
 
-  def test_for_table_data
-    result = @bq.table_data('test')
+  def test_for_table_raw_data
+    result = @bq.table_raw_data('test')
 
-    assert_kind_of Array, result
+    assert_kind_of Hash, result
+    assert_equal result['kind'], "bigquery#tableDataList"
   end
 
   def test_for_table_data_maxResults
