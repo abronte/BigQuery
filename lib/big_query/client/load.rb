@@ -1,7 +1,6 @@
 module BigQuery
   class Client
     module Insert
-      include Jobs
       # Loading Data From Cloud Datastore
       #
       # see https://cloud.google.com/bigquery/loading-data-cloud-datastore for possible opts
