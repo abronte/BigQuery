@@ -12,14 +12,13 @@ module BigQuery
       # @param dataset [String] dataset to look for
       # @return [Hash] json api response
       def tables(dataset = @dataset)
-        response = api({
-          :api_method => @bq.tables.list,
-          :parameters => {
-            "datasetId" => dataset,
-            "maxResults" => 9999999 # default is 50
-          }
-        })
-
+        response = api(
+          @client.list_tables(
+            @project_id,
+            dataset,
+            max_results: 9999999 # default is 50
+          )
+        )
         response['tables'] || []
       end
 
@@ -37,12 +36,20 @@ module BigQuery
       # @param dataset [String] dataset to look for
       # @param options [Hash] hash of optional query parameters (maxResults, startIndex)
       # @return [Hash] json api response
-      def table_raw_data(tableId, dataset = @dataset, options = {})
-        parameters = { 'datasetId' => dataset, 'tableId' => tableId }
-        parameters['maxResults'] = options[:maxResults] if options[:maxResults]
-        parameters['startIndex'] = options[:startIndex] if options[:startIndex]
-        api(api_method: @bq.tabledata.list,
-                       parameters: parameters)
+      def table_raw_data(table_id, dataset_id = @dataset, options = {})
+        option_parameters = {}
+        # I would like to change the option to snake case if there are no users, because I have added this feature
+        option_parameters[:max_results] = options[:maxResults] if options[:maxResults]
+        option_parameters[:start_index] = options[:startIndex] if options[:startIndex]
+
+        api(
+          @client.list_table_data(
+            @project_id,
+            dataset_id,
+            table_id,
+            option_parameters
+          )
+        )
       end
 
       # Returns all rows of table data
@@ -51,8 +58,8 @@ module BigQuery
       # @param dataset [String] dataset to look for
       # @param options [Hash] hash of optional query parameters (maxResults, startIndex)
       # @return [Hash] json api response
-      def table_data(tableId, dataset = @dataset, options = {})
-        response = table_raw_data(tableId, dataset, options)
+      def table_data(table_id, dataset_id = @dataset, options = {})
+        response = table_raw_data(table_id, dataset_id, options)
         response['rows'] || []
       end
 
@@ -61,18 +68,23 @@ module BigQuery
       # @param tableId [String] table id to insert into
       # @param opts [Hash] field value hash to be inserted
       # @return [Hash]
-      def insert(tableId, opts)
+      def insert(table_id, opts)
+        request = Google::Apis::BigqueryV2::InsertAllTableDataRequest.new
+        row = Google::Apis::BigqueryV2::InsertAllTableDataRequest::Row.new
         if opts.class == Array
-          body = { 'rows' => opts = opts.map{|x| {"json" => x}} }
+          request.rows = opts.map{|x| row.json = x; row}
         else
-          body = { 'rows' => [{ 'json' => opts }] }
+          row.json = opts
+          request.rows = [row]
         end
 
         api(
-          api_method: @bq.tabledata.insert_all,
-          parameters: { 'tableId' => tableId,
-                        'datasetId' => @dataset },
-          body_object: body
+          @client.insert_all_table_data(
+            @project_id,
+            @dataset,
+            table_id,
+            request
+          )
         )
       end
 
@@ -85,29 +97,30 @@ module BigQuery
       #
       # @bq.create_table('new_table', id: { type: 'INTEGER', mode: 'required' })
       # @bq.create_table('new_table', price: { type: 'FLOAT' })
-      def create_table(tableId, schema={})
+      def create_table(table_id, schema={})
+        table = Google::Apis::BigqueryV2::Table.new(
+          table_reference: { project_id: @project_id, dataset_id: @dataset, table_id: table_id },
+          schema: { fields: validate_schema(schema) }
+        )
         api(
-          api_method: @bq.tables.insert,
-          parameters: { "datasetId" => @dataset },
-          body_object: { "tableReference" => {
-                            "tableId" => tableId,
-                            "projectId" => @project_id,
-                            "datasetId" => @dataset
-                          },
-                          "schema" => {
-                            "fields" => validate_schema(schema)
-                          }
-                        }
+          @client.insert_table(
+            @project_id,
+            @dataset,
+            table
+          )
         )
       end
 
-      # Deletes the given tableId
+      # Deletes the given table_id
       #
-      # @param tableId [String] table id to insert into
-      def delete_table(tableId)
-        api(api_method: @bq.tables.delete,
-            parameters: { 'tableId' => tableId,
-                          'datasetId' => @dataset }
+      # @param table_id [String] table id to insert into
+      def delete_table(table_id)
+        api(
+          @client.delete_table(
+            @project_id,
+            @dataset,
+            table_id
+          )
         )
       end
 
@@ -121,20 +134,18 @@ module BigQuery
       # @bq.patch_table('existing_table', id: { type: 'INTEGER', mode: 'required' }, price: { type: 'FLOAT' })
       # It should be provide entire schema including the difference between the existing schema
       # Otherwise 'BigQuery::Errors::BigQueryError: Provided Schema does not match Table' occur
-      def patch_table(tableId, schema={})
+      def patch_table(table_id, schema={})
+        table = Google::Apis::BigqueryV2::Table.new(
+          table_reference: { project_id: @project_id, dataset_id: @dataset, table_id: table_id },
+          schema: { fields: validate_schema(schema) }
+        )
         api(
-          api_method: @bq.tables.patch,
-          parameters: { 'tableId' => tableId,
-                        'datasetId' => @dataset },
-          body_object: { 'tableReference' => {
-                            'tableId' => tableId,
-                            'projectId' => @project_id,
-                            'datasetId' => @dataset
-                          },
-                          'schema' => {
-                            'fields' => validate_schema(schema)
-                          }
-                        }
+          @client.patch_table(
+            @project_id,
+            @dataset,
+            table_id,
+            table
+          )
         )
       end
 
@@ -148,20 +159,18 @@ module BigQuery
       # @bq.update_table('existing_table', id: { type: 'INTEGER', mode: 'required' }, price: { type: 'FLOAT' })
       # It should be provide entire schema including the difference between the existing schema
       # Otherwise 'BigQuery::Errors::BigQueryError: Provided Schema does not match Table' occur
-      def update_table(tableId, schema={})
+      def update_table(table_id, schema={})
+        table = Google::Apis::BigqueryV2::Table.new(
+          table_reference: { project_id: @project_id, dataset_id: @dataset, table_id: table_id },
+          schema: { fields: validate_schema(schema) }
+        )
         api(
-          api_method: @bq.tables.update,
-          parameters: { 'tableId' => tableId,
-                        'datasetId' => @dataset },
-          body_object: { 'tableReference' => {
-                            'tableId' => tableId,
-                            'projectId' => @project_id,
-                            'datasetId' => @dataset
-                          },
-                          'schema' => {
-                            'fields' => validate_schema(schema)
-                          }
-                        }
+          @client.update_table(
+            @project_id,
+            @dataset,
+            table_id,
+            table
+          )
         )
       end
 
@@ -170,11 +179,13 @@ module BigQuery
       # @param tableId [String] table id to describe
       # @param dataset [String] dataset to look for
       # @return [Hash] json api response
-      def describe_table(tableId, dataset = @dataset)
+      def describe_table(table_id, dataset = @dataset)
         api(
-          api_method: @bq.tables.get,
-          parameters: { 'tableId' => tableId,
-                        'datasetId' => @dataset }
+          @client.get_table(
+            @project_id,
+            dataset,
+            table_id
+          )
         )
       end
 
@@ -194,7 +205,7 @@ module BigQuery
           if field["type"] == 'RECORD'
             field["fields"] = validate_schema(options[:fields])
           end
-          fields << field
+          fields << deep_symbolize_keys(field)
         end
         fields
       end

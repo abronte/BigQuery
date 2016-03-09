@@ -26,7 +26,7 @@ class BigQueryTest < MiniTest::Unit::TestCase
   end
 
   def test_faraday_option_config
-    assert_equal @bq.client.connection.options.timeout, 999
+    assert_equal @bq.client.client.request_options.timeout, 999
   end
 
   def test_for_tables
