@@ -11,7 +11,7 @@ module BigQuery
         end
         _opts[:destination_table] = Google::Apis::BigqueryV2::TableReference.new(_opts[:destination_table])
 
-        Google::Apis::BigqueryV2::JobConfigurationCopy.new(
+        Google::Apis::BigqueryV2::JobConfigurationTableCopy.new(
           _opts
         )
       end
