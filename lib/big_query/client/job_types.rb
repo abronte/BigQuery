@@ -9,7 +9,7 @@ module BigQuery
         else
           _opts[:source_table] = Google::Apis::BigqueryV2::TableReference.new(_opts[:source_table])
         end
-        _opts[:destination_table] = Google::Apis::BigqueryV2::TableReference.new(_opts[:destination_tables])
+        _opts[:destination_table] = Google::Apis::BigqueryV2::TableReference.new(_opts[:destination_table])
 
         Google::Apis::BigqueryV2::JobConfigurationCopy.new(
           _opts

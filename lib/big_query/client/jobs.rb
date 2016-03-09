@@ -54,7 +54,7 @@ module BigQuery
       def insert_job(opts, parameters = {}, media = nil)
         _opts = deep_symbolize_keys(opts)
         job_type = _opts.keys.find { |k| [:copy, :extract, :load, :query].include?(k.to_sym) }
-        job_type_configuration = __send__("_#{job_type.to_s}", deep_symbolize_keys(_opts[job_type]))
+        job_type_configuration = __send__("_#{job_type.to_s}", _opts[job_type])
         job_configuration = Google::Apis::BigqueryV2::JobConfiguration.new(
           job_type.to_sym => job_type_configuration
         )
