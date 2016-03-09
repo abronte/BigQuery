@@ -9,15 +9,17 @@ module BigQuery
       def load(opts)
         _opts = deep_symbolize_keys(opts)
         job_configuration = Google::Apis::BigqueryV2::JobConfiguration.new(
-          load: _load(_opts)
+          load: _load(_opts[:load])
         )
         job_configuration.dry_run = _opts[:dry_run] if _opts[:dry_run]
         job = Google::Apis::BigqueryV2::Job.new(
           configuration: job_configuration
         )
-        @client.insert_job(
-          @project_id,
-          job
+        api(
+          @client.insert_job(
+            @project_id,
+            job
+          )
         )
       end
     end

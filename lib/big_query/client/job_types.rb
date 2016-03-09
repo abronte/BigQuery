@@ -27,7 +27,7 @@ module BigQuery
       def _load(opts)
         _opts = opts.dup
         _opts[:destination_table] = Google::Apis::BigqueryV2::TableReference.new(_opts[:destination_table])
-        _opts[:schema] = Google::Apis::BigqueryV2::TableSchema.new({ fields: _opts[:schema][:fields] })
+        _opts[:schema] = Google::Apis::BigqueryV2::TableSchema.new(_opts[:schema]) if _opts[:schema]
         Google::Apis::BigqueryV2::JobConfigurationLoad.new(
           _opts
         )
