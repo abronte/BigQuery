@@ -214,6 +214,30 @@ class BigQueryTest < MiniTest::Unit::TestCase
     assert_equal result['kind'], "bigquery#tableDataInsertAllResponse"
   end
 
+  def test_for_insert_array_with_insert_id
+    data = [
+      [{"id" => 123, "type" => "Task"}, '12345'],
+      [{"id" => 234, "type" => "Task"}, '67890'],
+      {"id" => 321, "type" => "Other task"}
+    ]
+
+    result = @bq.insert_all('test' , data)
+
+    assert_equal result['kind'], "bigquery#tableDataInsertAllResponse"
+  end
+
+  def test_for_insert_array_with_insert_id_and_options
+    data = [
+      [{"id" => 123, "type" => "Task"}, '12345'],
+      [{"id" => 234, "type" => "Task"}, '67890'],
+      {"id" => 321, "type" => "Other task"}
+    ]
+
+    result = @bq.insert_all('test' , data, 'skipInvalidRows' => true, 'ignoreUnknownValues' => false)
+
+    assert_equal result['kind'], "bigquery#tableDataInsertAllResponse"
+  end
+
   def test_for_insert_job
     result = @bq.insert_job(query: {query: "SELECT * FROM [#{config['dataset']}.test] LIMIT 1"})
 
