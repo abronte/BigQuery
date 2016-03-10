@@ -4,6 +4,10 @@ require 'big_query/client/jobs'
 require 'big_query/client/tables'
 require 'big_query/client/datasets'
 require 'big_query/client/load'
+require 'big_query/client/hashable'
+require 'big_query/client/options'
+require 'big_query/client/response'
+require 'big_query/client/job_types'
 
 module BigQuery
   class Client
@@ -13,15 +17,35 @@ module BigQuery
     include BigQuery::Client::Tables
     include BigQuery::Client::Datasets
     include BigQuery::Client::Insert
+    include BigQuery::Client::Hashable
+    include BigQuery::Client::Options
+    include BigQuery::Client::Response
+    include BigQuery::Client::JobTypes
 
     attr_accessor :dataset, :project_id
 
     def initialize(opts = {})
-      @client = Google::APIClient.new(
-        application_name: 'BigQuery ruby app',
-        application_version: BigQuery::VERSION,
-        faraday_option: opts['faraday_option']
-      )
+      # for debug
+      # Google::Apis.logger.level = Logger::DEBUG
+
+      @client = Google::Apis::BigqueryV2::BigqueryService.new
+
+      @client.client_options.application_name = 'BigQuery ruby app'
+      @client.client_options.application_version = BigQuery::VERSION
+
+      # Memo:
+      # The google-api-client 0.9 is HTTP Client no longer in Faraday
+      # We accepts the options for backward compatibility
+      # (HTTP Client is replaced in the near future HTTP::Client...)
+      # https://github.com/google/google-api-ruby-client/issues/336#issuecomment-179400592
+      if opts['faraday_option'].is_a?(Hash)
+        @client.request_options.timeout_sec = opts['faraday_option']['timeout']
+        @client.request_options.open_timeout_sec = opts['faraday_option']['open_timeout']
+      # We accept the request_option instead of faraday_option
+      elsif opts['request_option'].is_a?(Hash)
+        @client.request_options.timeout_sec = opts['request_option']['timeout_sec']
+        @client.request_options.open_timeout_sec = opts['request_option']['open_timeout_sec']
+      end
 
       begin
         key = Google::APIClient::KeyUtils.load_from_pkcs12(opts['key'], 'notasecret')
@@ -38,8 +62,6 @@ module BigQuery
 
       refresh_auth
 
-      @bq = @client.discovered_api("bigquery", "v2")
-
       @project_id = opts['project_id']
       @dataset = opts['dataset']
     end
@@ -50,31 +72,10 @@ module BigQuery
 
     private
 
-    # Performs the api calls with the given params adding the defined project and
-    # dataset params if not defined
-    #
-    # @param opts [Hash] options for the api call
-    # @return [Hash] json response
-    def api(opts)
-      if opts[:parameters]
-        opts[:parameters] = opts[:parameters].merge({"projectId" => @project_id})
-      else
-        opts[:parameters] = {"projectId" => @project_id}
-      end
-
-      resp = @client.execute(opts)
-      data = parse_body(resp)
+    def api(resp)
+      data = deep_stringify_keys(resp.to_h)
       handle_error(data) if data && is_error?(data)
       data
-    end
-
-    # Parses json body if present and is a json formatted
-    #
-    # @param resp [Faraday::Response] response object
-    # @return [Hash]
-    def parse_body(resp)
-      return nil unless resp.body && !resp.body.empty?
-      JSON.parse(resp.body)
     end
   end
 end
