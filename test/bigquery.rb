@@ -213,7 +213,19 @@ class BigQueryTest < MiniTest::Test
       {"id" => 321, "type" => "Other task"}
     ]
 
-    result = @bq.insert('test' , data)
+    result = @bq.insert('test', data)
+
+    assert_equal result['kind'], "bigquery#tableDataInsertAllResponse"
+  end
+
+  def test_for_insert_array_with_insert_id
+    data = [
+      [{"id" => 123, "type" => "Task"}, '12345'],
+      {"id" => 456, "type" => "Task 2"},
+      [{"id" => 321, "type" => "Other task"}, '67890']
+    ]
+
+    result = @bq.insert_all('test', data, skip_invalid_rows: true, ignore_unknown_values: false)
 
     assert_equal result['kind'], "bigquery#tableDataInsertAllResponse"
 
