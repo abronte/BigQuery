@@ -4,12 +4,6 @@ require 'yaml'
 require 'big_query'
 require 'pry-byebug'
 
-module BigQuery
-  class Client
-    attr_accessor :client
-  end
-end
-
 class BigQueryTest < MiniTest::Unit::TestCase
   def setup
     @bq = BigQuery::Client.new(config)

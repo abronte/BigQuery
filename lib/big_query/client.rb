@@ -23,6 +23,7 @@ module BigQuery
     include BigQuery::Client::JobTypes
 
     attr_accessor :dataset, :project_id
+    attr_reader :client
 
     def initialize(opts = {})
       # for debug
