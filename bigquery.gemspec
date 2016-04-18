@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
 
   s.add_dependency "google-api-client", "0.9.3"
+  s.add_dependency "googleauth", ">=  0.5.0"
 
   s.add_development_dependency "bundler"
   s.add_development_dependency "rake"

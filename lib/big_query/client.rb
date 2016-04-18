@@ -47,18 +47,31 @@ module BigQuery
         @client.request_options.open_timeout_sec = opts['request_option']['open_timeout_sec']
       end
 
-      begin
-        key = Google::APIClient::KeyUtils.load_from_pkcs12(opts['key'], 'notasecret')
-      rescue ArgumentError
-        key = Google::APIClient::KeyUtils.load_from_pem(opts['key'], 'notasecret')
+      scope = 'https://www.googleapis.com/auth/bigquery'
+      if opts['json_key'].is_a?(String) && !opts['json_key'].empty?
+        if File.exist?(opts['json_key'])
+          auth = File.open(opts['json_key']) do |f|
+            Google::Auth::ServiceAccountCredentials.make_creds(json_key_io: f, scope: scope)
+          end
+        else
+          key = StringIO.new(opts['json_key'])
+          auth = Google::Auth::ServiceAccountCredentials.make_creds(json_key_io: key, scope: scope)
+        end
+      else
+        begin
+          key = Google::APIClient::KeyUtils.load_from_pkcs12(opts['key'], 'notasecret')
+        rescue ArgumentError
+          key = Google::APIClient::KeyUtils.load_from_pem(opts['key'], 'notasecret')
+        end
+        auth = Signet::OAuth2::Client.new(
+            token_credential_uri: 'https://accounts.google.com/o/oauth2/token',
+            audience: 'https://accounts.google.com/o/oauth2/token',
+            scope: scope,
+            issuer: opts['service_email'],
+            signing_key: key)
       end
 
-      @client.authorization = Signet::OAuth2::Client.new(
-        token_credential_uri: 'https://accounts.google.com/o/oauth2/token',
-        audience: 'https://accounts.google.com/o/oauth2/token',
-        scope: 'https://www.googleapis.com/auth/bigquery',
-        issuer: opts['service_email'],
-        signing_key: key)
+      @client.authorization = auth
 
       refresh_auth
 
