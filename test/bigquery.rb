@@ -16,7 +16,7 @@ class BigQueryTest < MiniTest::Test
     if @bq.tables_formatted.include? 'test'
       @bq.delete_table('test')
     end
-    result = @bq.create_table('test', id: { type: 'INTEGER', mode: 'REQUIRED' }, type: { type: 'STRING', mode: 'NULLABLE' })
+    @bq.create_table('test', id: { type: 'INTEGER', mode: 'REQUIRED' }, type: { type: 'STRING', mode: 'NULLABLE' })
   end
 
   def config
@@ -105,7 +105,7 @@ class BigQueryTest < MiniTest::Test
     if !@bq.tables_formatted.include? 'test123'
       @bq.create_table('test123', id: { type: 'INTEGER' })
     end
-    result = @bq.delete_table('test123')
+    @bq.delete_table('test123')
 
     tables = @bq.tables_formatted
 
@@ -255,7 +255,7 @@ class BigQueryTest < MiniTest::Test
       @bq.create_dataset('test123')
     end
 
-    result = @bq.delete_dataset('test123')
+    @bq.delete_dataset('test123')
 
     datasets = @bq.datasets_formatted
 
