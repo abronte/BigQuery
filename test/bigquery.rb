@@ -10,7 +10,7 @@ module BigQuery
   end
 end
 
-class BigQueryTest < MiniTest::Unit::TestCase
+class BigQueryTest < MiniTest::Test
   def setup
     @bq = BigQuery::Client.new(config)
     if @bq.tables_formatted.include? 'test'
