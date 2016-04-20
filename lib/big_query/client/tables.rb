@@ -69,14 +69,14 @@ module BigQuery
       # @param opts [Hash] field value hash to be inserted
       # @return [Hash]
       def insert(table_id, opts)
-        request = Google::Apis::BigqueryV2::InsertAllTableDataRequest.new
-        row = Google::Apis::BigqueryV2::InsertAllTableDataRequest::Row.new
         if opts.class == Array
-          request.rows = opts.map{|x| row.json = x; row}
+          rows = opts.map do |x|
+            Google::Apis::BigqueryV2::InsertAllTableDataRequest::Row.new(json: x)
+          end
         else
-          row.json = opts
-          request.rows = [row]
+          rows = [Google::Apis::BigqueryV2::InsertAllTableDataRequest::Row.new(json: opts)]
         end
+        request = Google::Apis::BigqueryV2::InsertAllTableDataRequest.new(rows: rows)
 
         api(
           @client.insert_all_table_data(
