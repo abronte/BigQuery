@@ -213,6 +213,11 @@ class BigQueryTest < MiniTest::Unit::TestCase
     result = @bq.insert('test' , data)
 
     assert_equal result['kind'], "bigquery#tableDataInsertAllResponse"
+
+    # You can check the results. However, the test is slightly slower
+    # sleep 5
+    # result = @bq.query("SELECT * FROM [#{config['dataset']}.test]")
+    # assert_equal result['totalRows'], "2"
   end
 
   def test_for_insert_job
