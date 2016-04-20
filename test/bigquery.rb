@@ -10,19 +10,22 @@ module BigQuery
   end
 end
 
-class BigQueryTest < MiniTest::Unit::TestCase
+class BigQueryTest < MiniTest::Test
   def setup
     @bq = BigQuery::Client.new(config)
     if @bq.tables_formatted.include? 'test'
       @bq.delete_table('test')
     end
-    result = @bq.create_table('test', id: { type: 'INTEGER', mode: 'REQUIRED' }, type: { type: 'STRING', mode: 'NULLABLE' })
+    @bq.create_table('test', id: { type: 'INTEGER', mode: 'REQUIRED' }, type: { type: 'STRING', mode: 'NULLABLE' })
   end
 
   def config
-    return @config if @config
-    config_data ||= File.expand_path(File.dirname(__FILE__) + "/../.bigquery_settings.yml")
-    @config = YAML.load_file(config_data)
+    if defined? @config
+      return @config
+    else
+      config_data ||= File.expand_path(File.dirname(__FILE__) + "/../.bigquery_settings.yml")
+      @config = YAML.load_file(config_data)
+    end
   end
 
   def test_faraday_option_config
@@ -105,7 +108,7 @@ class BigQueryTest < MiniTest::Unit::TestCase
     if !@bq.tables_formatted.include? 'test123'
       @bq.create_table('test123', id: { type: 'INTEGER' })
     end
-    result = @bq.delete_table('test123')
+    @bq.delete_table('test123')
 
     tables = @bq.tables_formatted
 
@@ -255,7 +258,7 @@ class BigQueryTest < MiniTest::Unit::TestCase
       @bq.create_dataset('test123')
     end
 
-    result = @bq.delete_dataset('test123')
+    @bq.delete_dataset('test123')
 
     datasets = @bq.datasets_formatted
 
