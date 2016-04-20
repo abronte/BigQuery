@@ -20,9 +20,12 @@ class BigQueryTest < MiniTest::Test
   end
 
   def config
-    return @config if @config
-    config_data ||= File.expand_path(File.dirname(__FILE__) + "/../.bigquery_settings.yml")
-    @config = YAML.load_file(config_data)
+    if defined? @config
+      return @config
+    else
+      config_data ||= File.expand_path(File.dirname(__FILE__) + "/../.bigquery_settings.yml")
+      @config = YAML.load_file(config_data)
+    end
   end
 
   def test_faraday_option_config
