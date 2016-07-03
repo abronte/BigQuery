@@ -87,6 +87,14 @@ module BigQuery
         )
       end
 
+      def create_table2(datasetId, config={})
+        api(
+          api_method: @bq.tables.insert,
+          parameters: { "datasetId" => datasetId },
+          body_object: config
+        )
+      end
+
       # Deletes the given tableId
       #
       # @param tableId [String] table id to insert into
