@@ -88,6 +88,28 @@ module BigQuery
         )
       end
 
+      # bulk insert rows into table with extra options
+      #
+      # @param tableId [String] table id to insert into
+      # @param data [String] array of hash[field values], or (hash[field values] + insert_id)
+      # @param options [Hash] extra options
+      # @return [Hash]
+      def insert_all(tableId, data, options = {})
+        rows = data.map do |row|
+          if row.class == Hash
+            { 'json' => row }
+          elsif row.class == Array
+            { 'json' => row[0], 'insertId' => row[1] }
+          end
+        end
+
+        api(
+          api_method: @bq.tabledata.insert_all,
+          parameters: { 'tableId' => tableId, 'datasetId' => @dataset },
+          body_object: { 'rows' => rows }.merge(options)
+        )
+      end
+
       # Creating a new table
       #
       # @param tableId [String] table id to insert into
