@@ -86,6 +86,7 @@ module BigQuery
     private
 
     def api(resp)
+      resp = nil if resp == ''
       data = deep_stringify_keys(resp.to_h)
       handle_error(data) if data && is_error?(data)
       data

@@ -88,6 +88,38 @@ module BigQuery
         )
       end
 
+      # insert multiple row into table with extra options
+      #
+      # @param table_id [String] table id to insert into
+      # @param data [Array] array of hashes, or array of <hash, insert_id> arrays
+      # @param opts [Hash] extra options
+      # @return [Hash]
+      def insert_all(table_id, data, opts = {})
+        rows = data.map do |record|
+          row = Google::Apis::BigqueryV2::InsertAllTableDataRequest::Row.new
+
+          if record.class == Hash
+            row.json = record
+          elsif record.class == Array
+            row.json = record[0]
+            row.insert_id = record[1]
+          end
+
+          row
+        end
+
+        request = Google::Apis::BigqueryV2::InsertAllTableDataRequest.new({rows: rows}.merge(opts))
+
+        api(
+          @client.insert_all_table_data(
+            @project_id,
+            @dataset,
+            table_id,
+            request
+          )
+        )
+      end
+
       # Creating a new table
       #
       # @param tableId [String] table id to insert into
