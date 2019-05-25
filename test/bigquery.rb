@@ -201,6 +201,13 @@ class BigQueryTest < MiniTest::Test
     assert_equal result['jobReference']['jobId'], nil
   end
 
+  def test_for_query_useLegacySql
+    result = @bq.query("SELECT * FROM `#{config['dataset']}.test` LIMIT 1", useLegacySql: false)
+
+    assert_equal result['kind'], "bigquery#queryResponse"
+    assert_equal result['jobComplete'], true
+  end
+
   def test_for_insert
     result = @bq.insert('test' ,"id" => 123, "type" => "Task")
 
