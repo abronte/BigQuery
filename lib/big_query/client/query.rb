@@ -9,6 +9,7 @@ module BigQuery
       # @option options [Boolean] dryRun Don't actually run this job
       # @option options [Integer] maxResults The maximum number of rows of data to return per page of results.
       # @option options [Boolean] useQueryCache Whether to look for the result in the query cache.
+      # @option options [Boolean] useLegacySql Whether to use BigQuery's legacy SQL dialect for this query.
       # @return [Hash] json api response
       # @see https://cloud.google.com/bigquery/docs/reference/v2/jobs/query
       def query(given_query, options={})
@@ -19,6 +20,7 @@ module BigQuery
         query_request.max_results      = options[:maxResults] if options[:maxResults]
         query_request.dry_run          = options[:dryRun] if options.has_key?(:dryRun)
         query_request.use_query_cache  = options[:useQueryCache] if options.has_key?(:useQueryCache)
+        query_request.use_legacy_sql   = options[:useLegacySql] if options.has_key?(:useLegacySql)
 
         api(
           @client.query_job(
